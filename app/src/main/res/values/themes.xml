@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.FlappyCoin" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/black</item>
+        <item name="android:colorBackground">@color/black</item>
+        <item name="colorPrimary">@color/gold</item>
+        <item name="colorPrimaryDark">@color/black</item>
+        <item name="colorAccent">@color/gold</item>
+        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:navigationBarColor">@color/black</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button.Colored">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+</resources>
