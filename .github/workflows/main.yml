@@ -1,4 +1,4 @@
-name: Build APK
+name: Build FlappyCoin APK
 
 on:
   push:
@@ -10,8 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-    - name: Checkout
+    - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Setup Java
@@ -20,11 +19,14 @@ jobs:
         distribution: temurin
         java-version: 17
 
-    - name: Permission gradlew
+    - name: Give permission to gradlew
       run: chmod +x gradlew
 
     - name: Build Debug APK
-      run: ./gradlew :app:assembleDebug
+      run: ./gradlew :app:assembleDebug --stacktrace
+
+    - name: Show APK files
+      run: ls -R app/build/outputs/apk/
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
