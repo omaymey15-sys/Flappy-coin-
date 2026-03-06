@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FlappyCoin</string>
+    <string name="play">Jouer</string>
+    <string name="shop">Boutique</string>
+    <string name="stats">Statistiques</string>
+    <string name="leaderboard">Classement</string>
+    <string name="help">Aide</string>
+    <string name="settings">Paramètres</string>
+    <string name="sign_up">S\'inscrire</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="country">Pays</string>
+    <string name="language">Langue</string>
+    <string name="currency">Devise</string>
+    <string name="register">S\'inscrire</string>
+    <string name="game_over">GAME OVER</string>
+    <string name="score">Score</string>
+    <string name="coins">Pièces</string>
+    <string name="withdraw">Retirer</string>
+    <string name="balance">Solde</string>
+    <string name="watch_ad">Regarder une pub</string>
+    <string name="revive">Relancer</string>
+    <string name="minimum_withdrawal">Minimum de retrait : 300$</string>
+    <string name="distance">Distance</string>
+    <string name="time">Temps</string>
+    <string name="best_score">Meilleur score</string>
+    <string name="total_games">Parties jouées</string>
+    <string name="average_score">Score moyen</string>
+    <string name="coin_per_game">Pièces/Partie</string>
+</resources>
