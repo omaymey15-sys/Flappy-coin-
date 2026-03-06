@@ -60,11 +60,11 @@ object CountryData {
         Country("MT", "Malte", "EUR", 0.92f),
     )
 
-    fun getCountryByCodes(code: String): Country? {
+    fun getCountryByCode(code: String): Country? {
         return countries.find { it.code == code }
     }
 
-    fun getCountries(): List<String> {
+    fun getCountryNames(): List<String> {
         return countries.map { it.name }
     }
 
