@@ -18,7 +18,7 @@
         android:id="@+id/tvDescription"
         android:text="Description"
         android:textSize="12sp"
-        android:textColor="@android:color/lighter_gray"
+        android:textColor="@android:color/darker_gray"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp" />
 
