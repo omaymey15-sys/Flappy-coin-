@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="12dp"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/card_background">
+
+    <TextView
+        android:id="@+id/tvName"
+        android:text="Item Name"
+        android:textSize="18sp"
+        android:textColor="#FFD700"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvDescription"
+        android:text="Description"
+        android:textSize="12sp"
+        android:textColor="@android:color/lighter_gray"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:text="🪙 500"
+            android:textSize="14sp"
+            android:textColor="#FFD700"
+            android:textStyle="bold"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnBuy"
+            android:text="Acheter"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/button_background"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
