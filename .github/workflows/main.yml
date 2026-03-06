@@ -2,7 +2,8 @@ name: Build FlappyCoin APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -10,54 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Télécharger le code
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # 2️⃣ Installer Java 17
-    - name: Setup Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: temurin
-        java-version: 17
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
 
-    # 3️⃣ Installer Android SDK
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
-      with:
-        api-level: 34
-        build-tools: 34.0.0
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
-    # 4️⃣ Rendre gradlew exécutable
-    - name: Make gradlew executable
-      run: chmod +x gradlew
+      - name: Grant permission to Gradle
+        run: chmod +x gradlew
 
-    # 5️⃣ Vérifier Gradle Wrapper
-    - name: Check Gradle version
-      run: ./gradlew --version
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
 
-    # 6️⃣ Construire Debug APK
-    - name: Build Debug APK
-      run: ./gradlew :app:assembleDebug --stacktrace
-
-    # 7️⃣ Construire Release APK
-    - name: Build Release APK
-      run: ./gradlew :app:assembleRelease --stacktrace
-
-    # 8️⃣ Vérifier la sortie APK
-    - name: List APK files
-      run: ls -R app/build/outputs/apk/
-
-    # 9️⃣ Upload Debug APK
-    - name: Upload Debug APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: FlappyCoin_Debug_APK
-        path: app/build/outputs/apk/debug/app-debug.apk
-
-    # 🔟 Upload Release APK
-    - name: Upload Release APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: FlappyCoin_Release_APK
-        path: app/build/outputs/apk/release/app-release.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlappyCoin-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
