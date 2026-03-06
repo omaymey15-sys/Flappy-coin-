@@ -1,13 +1,11 @@
-// build.gradle (Project)
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        // Plugin Android compatible Gradle 9
-        classpath "com.android.tools.build:gradle:8.1.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.10"
+        classpath "com.android.tools.build:gradle:8.2.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10"
     }
 }
 
@@ -16,8 +14,4 @@ allprojects {
         google()
         mavenCentral()
     }
-}
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
 }
