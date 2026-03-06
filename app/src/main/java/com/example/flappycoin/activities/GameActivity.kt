@@ -3,9 +3,7 @@ package com.example.flappycoin.activities
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.util.DisplayMetrics
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.R
@@ -21,7 +19,15 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        gameView = GameView(this) { score, coins, distance, time ->
+        
+        // Récupérer les dimensions de l'écran
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val screenW = displayMetrics.widthPixels
+        val screenH = displayMetrics.heightPixels
+        
+        // Créer GameView avec les dimensions
+        gameView = GameView(this, screenW, screenH) { score, coins, distance, time ->
             showGameOver(score, coins, distance, time)
         }
         setContentView(gameView)
