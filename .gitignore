@@ -1,0 +1,29 @@
+# Gradle files
+.gradle/
+build/
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Android Studio
+.idea/
+.classpath
+.project
+.settings/
+*.iml
+*.iws
+*.ipr
+out/
+local.properties
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Production keys
+keystore.jks
+.env
+
+# Logs
+*.log
