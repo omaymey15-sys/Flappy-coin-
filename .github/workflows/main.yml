@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Télécharger ton code
+    # 1️⃣ Télécharger le code
     - name: Checkout repository
       uses: actions/checkout@v4
 
@@ -21,30 +21,41 @@ jobs:
         distribution: temurin
         java-version: 17
 
-    # 3️⃣ Rendre gradlew exécutable
-    - name: Give permission to gradlew
+    # 3️⃣ Installer Android SDK
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 34
+        build-tools: 34.0.0
+
+    # 4️⃣ Rendre gradlew exécutable
+    - name: Make gradlew executable
       run: chmod +x gradlew
 
-    # 4️⃣ Construire l’APK Debug
+    # 5️⃣ Vérifier Gradle Wrapper
+    - name: Check Gradle version
+      run: ./gradlew --version
+
+    # 6️⃣ Construire Debug APK
     - name: Build Debug APK
       run: ./gradlew :app:assembleDebug --stacktrace
 
-    # 5️⃣ Construire l’APK Release
+    # 7️⃣ Construire Release APK
     - name: Build Release APK
       run: ./gradlew :app:assembleRelease --stacktrace
 
-    # 6️⃣ Vérifier la sortie APK
-    - name: Show APK files
+    # 8️⃣ Vérifier la sortie APK
+    - name: List APK files
       run: ls -R app/build/outputs/apk/
 
-    # 7️⃣ Uploader le Debug APK
+    # 9️⃣ Upload Debug APK
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
         name: FlappyCoin_Debug_APK
         path: app/build/outputs/apk/debug/app-debug.apk
 
-    # 8️⃣ Uploader le Release APK
+    # 🔟 Upload Release APK
     - name: Upload Release APK
       uses: actions/upload-artifact@v4
       with:
