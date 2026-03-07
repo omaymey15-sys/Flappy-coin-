@@ -1,5 +1,8 @@
 package com.example.flappycoin.models
 
+// Import nécessaire pour companion object
+import com.example.flappycoin.managers.GamePreferences
+
 /**
  * Modèle DTO pour les statistiques du joueur
  */
@@ -47,6 +50,3 @@ data class PlayerStats(
         }
     }
 }
-
-// Import nécessaire pour companion object
-import com.example.flappycoin.managers.GamePreferences
