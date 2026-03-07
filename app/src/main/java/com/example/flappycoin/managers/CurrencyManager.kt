@@ -1,17 +1,18 @@
 package com.example.flappycoin.managers
 
-import android.content.Context
-import com.example.flappycoin.utils.CountryData
-import com.example.flappycoin.utils.PrefsKeys
+import com.example.flappycoin.utils.Constants
 
+/**
+ * Gestion des conversions monétaires
+ * Convertit coins ↔ devises locales
+ */
 object CurrencyManager {
     private var exchangeRate = 1.0f
     private var currency = "USD"
 
-    fun init(context: Context) {
-        val prefs = context.getSharedPreferences("FlappyCoin", Context.MODE_PRIVATE)
-        currency = prefs.getString(PrefsKeys.CURRENCY, "USD") ?: "USD"
-        exchangeRate = prefs.getFloat(PrefsKeys.EXCHANGE_RATE, 1.0f)
+    fun init(gamePrefs: GamePreferences) {
+        currency = gamePrefs.getCurrency()
+        exchangeRate = gamePrefs.getExchangeRate()
     }
 
     fun setExchangeRate(rate: Float) {
@@ -22,19 +23,27 @@ object CurrencyManager {
         currency = curr
     }
 
-    // Convertir coins en devise locale
+    /**
+     * Convertit coins en devise locale formatée
+     * 10 coins = 1 USD
+     */
     fun coinsToLocalCurrency(coins: Int): String {
-        val dollars = coins / 10f  // 10 coins = 1$
+        val dollars = coins / Constants.COINS_PER_DOLLAR.toFloat()
         val localAmount = dollars * exchangeRate
         return formatCurrency(localAmount)
     }
 
-    // Convertir devise locale en coins
+    /**
+     * Convertit montant devise locale en coins
+     */
     fun currencyToCoins(amount: Float): Int {
         val dollars = amount / exchangeRate
-        return (dollars * 10).toInt()  // 10 coins = 1$
+        return (dollars * Constants.COINS_PER_DOLLAR).toInt()
     }
 
+    /**
+     * Formate montant selon devise sélectionnée
+     */
     fun formatCurrency(amount: Float): String {
         return when (currency) {
             "USD" -> "$%.2f".format(amount)
@@ -45,11 +54,18 @@ object CurrencyManager {
             "INR" -> "₹%.2f".format(amount)
             "BRL" -> "R$%.2f".format(amount)
             "RUB" -> "₽%.2f".format(amount)
+            "KRW" -> "₩%.0f".format(amount)
+            "THB" -> "฿%.2f".format(amount)
+            "MXN" -> "Mex$%.2f".format(amount)
+            "CHF" -> "CHF %.2f".format(amount)
+            "SEK" -> "kr %.2f".format(amount)
+            "AUD" -> "A$%.2f".format(amount)
+            "CAD" -> "C$%.2f".format(amount)
+            "AED" -> "د.إ%.2f".format(amount)
             else -> "$%.2f".format(amount)
         }
     }
 
     fun getCurrency(): String = currency
-
     fun getExchangeRate(): Float = exchangeRate
 }
