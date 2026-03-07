@@ -5,14 +5,24 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
 
+/**
+ * Gestion de la vérification réseau
+ * Compatible API 21+
+ */
 object NetworkManager {
+    
+    /**
+     * Vérifie si une connexion internet active existe
+     */
     fun isInternetAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-            ?: return false
+        val connectivityManager = 
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return false
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork ?: return false
-            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return false
+            val capabilities = connectivityManager.getNetworkCapabilities(network) 
+                ?: return false
             capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
         } else {
             @Suppress("DEPRECATION")
@@ -21,13 +31,18 @@ object NetworkManager {
         }
     }
 
+    /**
+     * Retourne le type de connexion (WIFI, CELLULAR, ETHERNET, NONE)
+     */
     fun getConnectionType(context: Context): String {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-            ?: return "UNKNOWN"
+        val connectivityManager = 
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+                ?: return "UNKNOWN"
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val network = connectivityManager.activeNetwork ?: return "NONE"
-            val capabilities = connectivityManager.getNetworkCapabilities(network) ?: return "UNKNOWN"
+            val capabilities = connectivityManager.getNetworkCapabilities(network) 
+                ?: return "UNKNOWN"
 
             when {
                 capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "WIFI"
