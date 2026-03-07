@@ -22,7 +22,7 @@ class SignUpActivity : AppCompatActivity() {
             binding = ActivitySignupBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            Log.d(TAG, "onCreate: Initializing spinners...")
+            Log.d(TAG, "onCreate: Loading spinners...")
             setupCountrySpinner()
             setupLanguageSpinner()
             setupCurrencySpinner()
@@ -32,7 +32,7 @@ class SignUpActivity : AppCompatActivity() {
             }
         } catch (e: Exception) {
             Log.e(TAG, "onCreate error: ${e.message}", e)
-            Toast.makeText(this, "Erreur lors du chargement: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -57,14 +57,14 @@ class SignUpActivity : AppCompatActivity() {
                             CurrencyManager.setExchangeRate(selectedCountry.exchangeRate)
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "onItemSelected country error: ${e.message}", e)
+                        Log.e(TAG, "Country selection error: ${e.message}")
                     }
                 }
 
                 override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
             })
         } catch (e: Exception) {
-            Log.e(TAG, "setupCountrySpinner error: ${e.message}", e)
+            Log.e(TAG, "setupCountrySpinner error: ${e.message}")
             Toast.makeText(this, "Erreur Spinner Pays: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -80,7 +80,7 @@ class SignUpActivity : AppCompatActivity() {
             binding.spinnerLanguage.adapter = adapter
             binding.spinnerLanguage.setSelection(0, false)
         } catch (e: Exception) {
-            Log.e(TAG, "setupLanguageSpinner error: ${e.message}", e)
+            Log.e(TAG, "setupLanguageSpinner error: ${e.message}")
             Toast.makeText(this, "Erreur Spinner Langue: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -91,17 +91,16 @@ class SignUpActivity : AppCompatActivity() {
             val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, currencies)
             binding.spinnerCurrency.adapter = adapter
         } catch (e: Exception) {
-            Log.e(TAG, "setupCurrencySpinner error: ${e.message}", e)
+            Log.e(TAG, "setupCurrencySpinner error: ${e.message}")
             Toast.makeText(this, "Erreur Spinner Devise: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun registerUser() {
         try {
-            Log.d(TAG, "registerUser: Starting...")
-            
+            Log.d(TAG, "Starting registration...")
+
             val username = binding.etUsername.text?.toString()?.trim() ?: ""
-            Log.d(TAG, "Username: $username")
 
             if (username.isEmpty()) {
                 Toast.makeText(this, "Veuillez entrer un nom d'utilisateur", Toast.LENGTH_SHORT).show()
@@ -115,12 +114,11 @@ class SignUpActivity : AppCompatActivity() {
 
             val countryPosition = binding.spinnerCountry.selectedItemPosition
             if (countryPosition < 0 || countryPosition >= CountryData.countries.size) {
-                Toast.makeText(this, "Veuillez sélectionner un pays valide", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Sélectionnez un pays", Toast.LENGTH_SHORT).show()
                 return
             }
 
             val country = CountryData.countries[countryPosition]
-            Log.d(TAG, "Country: ${country.code}")
 
             val languagePosition = binding.spinnerLanguage.selectedItemPosition
             val languages = listOf(
@@ -131,46 +129,43 @@ class SignUpActivity : AppCompatActivity() {
             )
 
             if (languagePosition < 0 || languagePosition >= languages.size) {
-                Toast.makeText(this, "Veuillez sélectionner une langue valide", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Sélectionnez une langue", Toast.LENGTH_SHORT).show()
                 return
             }
 
             val language = languages[languagePosition]
-            Log.d(TAG, "Language: $language")
 
             val currencyItem = binding.spinnerCurrency.selectedItem
             if (currencyItem == null) {
-                Toast.makeText(this, "Veuillez sélectionner une devise valide", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Sélectionnez une devise", Toast.LENGTH_SHORT).show()
                 return
             }
-            
-            val currency = currencyItem.toString()
-            Log.d(TAG, "Currency: $currency")
 
-            Log.d(TAG, "Saving preferences...")
-            
-            // ✅ CORRECTION : Sauvegarde UNIQUEMENT dans GamePreferences
-            // Ne pas appeler LanguageManager.setLanguage() car elle peut causer un crash
+            val currency = currencyItem.toString()
+
+            // ✅ Sauvegarde SIMPLE sans appels dangereux
             GamePreferences.apply {
                 setUsername(username)
                 setCountry(country.code)
-                setLanguage(language)  // ✅ Sauvegarde dans SharedPreferences
+                setLanguage(language)
                 setCurrency(currency)
                 setExchangeRate(country.exchangeRate)
             }
 
-            // ✅ La langue sera appliquée au prochain lancement (dans MyApplication.kt)
             CurrencyManager.setExchangeRate(country.exchangeRate)
 
-            Log.d(TAG, "Registration successful, launching HomeActivity...")
+            Log.d(TAG, "Registration successful!")
             
-            startActivity(Intent(this, HomeActivity::class.java))
+            // Redirection
+            val intent = Intent(this, HomeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
             finish()
 
         } catch (e: Exception) {
-            Log.e(TAG, "registerUser error: ${e.message}", e)
+            Log.e(TAG, "Registration error: ${e.message}", e)
             e.printStackTrace()
-            Toast.makeText(this, "Erreur lors de l'inscription: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 }
