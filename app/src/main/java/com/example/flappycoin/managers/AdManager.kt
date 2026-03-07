@@ -10,17 +10,25 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 
+/**
+ * Gestion complète AdMob
+ * Banner, Interstitiel, Récompensée
+ */
 object AdManager {
     private var rewardedAd: RewardedAd? = null
     private var isLoadingRewarded = false
-    private var rewardCallback: ((Int) -> Unit)? = null
 
     fun init(context: Context) {
-        MobileAds.initialize(context)
-        loadRewardedAd(context)
+        try {
+            MobileAds.initialize(context)
+            loadRewardedAd(context)
+        } catch (e: Exception) {
+            Log.e("AdManager", "Erreur init AdMob", e)
+        }
     }
 
-    // ================= PUBLICITÉ RÉCOMPENSÉE =================
+    // ============= PUBLICITÉ RÉCOMPENSÉE =============
+
     fun loadRewardedAd(context: Context) {
         if (isLoadingRewarded || rewardedAd != null) return
 
@@ -33,14 +41,14 @@ object AdManager {
             adRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d("AdManager", "Failed to load rewarded ad: ${adError.message}")
+                    Log.d("AdManager", "Pub récompensée échouée: ${adError.message}")
                     isLoadingRewarded = false
                 }
 
                 override fun onAdLoaded(ad: RewardedAd) {
                     rewardedAd = ad
                     isLoadingRewarded = false
-                    Log.d("AdManager", "Rewarded ad loaded")
+                    Log.d("AdManager", "Pub récompensée chargée")
                 }
             }
         )
@@ -48,16 +56,15 @@ object AdManager {
 
     fun showRewardedAd(activity: Activity, callback: (Int) -> Unit) {
         if (rewardedAd == null) {
-            Log.d("AdManager", "No rewarded ad loaded")
+            Log.d("AdManager", "Pub récompensée non disponible")
             return
         }
 
-        if (System.currentTimeMillis() - GamePreferences.getLastRewardedAdTime() < Constants.REWARDED_AD_INTERVAL_MS) {
-            Log.d("AdManager", "Rewarded ad interval not met")
+        if (!canShowRewardedAd()) {
+            Log.d("AdManager", "Intervalle minimum non atteint")
             return
         }
 
-        rewardCallback = callback
         rewardedAd?.show(activity) { rewardItem ->
             val reward = Constants.REWARDED_AD_BONUS
             callback(reward)
