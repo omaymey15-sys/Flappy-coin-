@@ -10,7 +10,6 @@ import com.example.flappycoin.databinding.ActivitySignupBinding
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.utils.CountryData
-import com.example.flappycoin.utils.LanguageManager
 import com.example.flappycoin.utils.LanguageCodes
 
 class SignUpActivity : AppCompatActivity() {
@@ -104,7 +103,6 @@ class SignUpActivity : AppCompatActivity() {
             val username = binding.etUsername.text?.toString()?.trim() ?: ""
             Log.d(TAG, "Username: $username")
 
-            // Validation
             if (username.isEmpty()) {
                 Toast.makeText(this, "Veuillez entrer un nom d'utilisateur", Toast.LENGTH_SHORT).show()
                 return
@@ -115,7 +113,6 @@ class SignUpActivity : AppCompatActivity() {
                 return
             }
 
-            // Vérification sécurisée du pays
             val countryPosition = binding.spinnerCountry.selectedItemPosition
             if (countryPosition < 0 || countryPosition >= CountryData.countries.size) {
                 Toast.makeText(this, "Veuillez sélectionner un pays valide", Toast.LENGTH_SHORT).show()
@@ -125,7 +122,6 @@ class SignUpActivity : AppCompatActivity() {
             val country = CountryData.countries[countryPosition]
             Log.d(TAG, "Country: ${country.code}")
 
-            // Vérification sécurisée de la langue
             val languagePosition = binding.spinnerLanguage.selectedItemPosition
             val languages = listOf(
                 LanguageCodes.FRENCH, LanguageCodes.ENGLISH, LanguageCodes.SPANISH, LanguageCodes.GERMAN,
@@ -142,7 +138,6 @@ class SignUpActivity : AppCompatActivity() {
             val language = languages[languagePosition]
             Log.d(TAG, "Language: $language")
 
-            // Vérification sécurisée de la devise
             val currencyItem = binding.spinnerCurrency.selectedItem
             if (currencyItem == null) {
                 Toast.makeText(this, "Veuillez sélectionner une devise valide", Toast.LENGTH_SHORT).show()
@@ -152,24 +147,23 @@ class SignUpActivity : AppCompatActivity() {
             val currency = currencyItem.toString()
             Log.d(TAG, "Currency: $currency")
 
-            // Sauvegarde dans les préférences
             Log.d(TAG, "Saving preferences...")
+            
+            // ✅ CORRECTION : Sauvegarde UNIQUEMENT dans GamePreferences
+            // Ne pas appeler LanguageManager.setLanguage() car elle peut causer un crash
             GamePreferences.apply {
                 setUsername(username)
                 setCountry(country.code)
-                setLanguage(language)
+                setLanguage(language)  // ✅ Sauvegarde dans SharedPreferences
                 setCurrency(currency)
                 setExchangeRate(country.exchangeRate)
             }
 
-            // Appliquer la langue et devise
-            LanguageManager.setLanguage(language)
-            CurrencyManager.setCurrency(currency)
+            // ✅ La langue sera appliquée au prochain lancement (dans MyApplication.kt)
             CurrencyManager.setExchangeRate(country.exchangeRate)
 
             Log.d(TAG, "Registration successful, launching HomeActivity...")
             
-            // Redirection
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
 
