@@ -2,6 +2,7 @@ package com.example.flappycoin.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -14,28 +15,30 @@ import com.example.flappycoin.utils.LanguageCodes
 
 class SignUpActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
+    private val TAG = "SignUpActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySignupBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
         try {
+            binding = ActivitySignupBinding.inflate(layoutInflater)
+            setContentView(binding.root)
+
+            Log.d(TAG, "onCreate: Initializing spinners...")
             setupCountrySpinner()
             setupLanguageSpinner()
             setupCurrencySpinner()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Erreur lors du chargement: ${e.message}", Toast.LENGTH_LONG).show()
-        }
 
-        binding.btnRegister.setOnClickListener {
-            registerUser()
+            binding.btnRegister.setOnClickListener {
+                registerUser()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "onCreate error: ${e.message}", e)
+            Toast.makeText(this, "Erreur lors du chargement: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun setupCountrySpinner() {
         try {
-            // ✅ Utilise directement CountryData.countries
             val countries = CountryData.countries.map { it.name }
             val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, countries)
             binding.spinnerCountry.adapter = adapter
@@ -49,19 +52,20 @@ class SignUpActivity : AppCompatActivity() {
                             if (currencyAdapter != null) {
                                 val currencyPosition = currencyAdapter.getPosition(selectedCountry.currency)
                                 if (currencyPosition >= 0) {
-                                    binding.spinnerCurrency.setSelection(currencyPosition)
+                                    binding.spinnerCurrency.setSelection(currencyPosition, false)
                                 }
                             }
                             CurrencyManager.setExchangeRate(selectedCountry.exchangeRate)
                         }
                     } catch (e: Exception) {
-                        e.printStackTrace()
+                        Log.e(TAG, "onItemSelected country error: ${e.message}", e)
                     }
                 }
 
                 override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
             })
         } catch (e: Exception) {
+            Log.e(TAG, "setupCountrySpinner error: ${e.message}", e)
             Toast.makeText(this, "Erreur Spinner Pays: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -73,17 +77,11 @@ class SignUpActivity : AppCompatActivity() {
                 "Português", "Русский", "中文", "日本語", "한국어",
                 "العربية", "हिन्दी", "Türkçe", "Nederlands"
             )
-            val codes = listOf(
-                LanguageCodes.FRENCH, LanguageCodes.ENGLISH, LanguageCodes.SPANISH, LanguageCodes.GERMAN,
-                LanguageCodes.ITALIAN, LanguageCodes.PORTUGUESE, LanguageCodes.RUSSIAN, LanguageCodes.CHINESE,
-                LanguageCodes.JAPANESE, LanguageCodes.KOREAN, LanguageCodes.ARABIC, LanguageCodes.HINDI,
-                LanguageCodes.TURKISH, LanguageCodes.DUTCH
-            )
-
             val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, languages)
             binding.spinnerLanguage.adapter = adapter
-            binding.spinnerLanguage.setSelection(0)
+            binding.spinnerLanguage.setSelection(0, false)
         } catch (e: Exception) {
+            Log.e(TAG, "setupLanguageSpinner error: ${e.message}", e)
             Toast.makeText(this, "Erreur Spinner Langue: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
@@ -94,13 +92,17 @@ class SignUpActivity : AppCompatActivity() {
             val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, currencies)
             binding.spinnerCurrency.adapter = adapter
         } catch (e: Exception) {
+            Log.e(TAG, "setupCurrencySpinner error: ${e.message}", e)
             Toast.makeText(this, "Erreur Spinner Devise: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun registerUser() {
         try {
-            val username = binding.etUsername.text.toString().trim()
+            Log.d(TAG, "registerUser: Starting...")
+            
+            val username = binding.etUsername.text?.toString()?.trim() ?: ""
+            Log.d(TAG, "Username: $username")
 
             // Validation
             if (username.isEmpty()) {
@@ -113,7 +115,7 @@ class SignUpActivity : AppCompatActivity() {
                 return
             }
 
-            // ✅ Vérification sécurisée
+            // Vérification sécurisée du pays
             val countryPosition = binding.spinnerCountry.selectedItemPosition
             if (countryPosition < 0 || countryPosition >= CountryData.countries.size) {
                 Toast.makeText(this, "Veuillez sélectionner un pays valide", Toast.LENGTH_SHORT).show()
@@ -121,7 +123,9 @@ class SignUpActivity : AppCompatActivity() {
             }
 
             val country = CountryData.countries[countryPosition]
+            Log.d(TAG, "Country: ${country.code}")
 
+            // Vérification sécurisée de la langue
             val languagePosition = binding.spinnerLanguage.selectedItemPosition
             val languages = listOf(
                 LanguageCodes.FRENCH, LanguageCodes.ENGLISH, LanguageCodes.SPANISH, LanguageCodes.GERMAN,
@@ -136,9 +140,20 @@ class SignUpActivity : AppCompatActivity() {
             }
 
             val language = languages[languagePosition]
-            val currency = binding.spinnerCurrency.selectedItem.toString()
+            Log.d(TAG, "Language: $language")
 
-            // Sauvegarde
+            // Vérification sécurisée de la devise
+            val currencyItem = binding.spinnerCurrency.selectedItem
+            if (currencyItem == null) {
+                Toast.makeText(this, "Veuillez sélectionner une devise valide", Toast.LENGTH_SHORT).show()
+                return
+            }
+            
+            val currency = currencyItem.toString()
+            Log.d(TAG, "Currency: $currency")
+
+            // Sauvegarde dans les préférences
+            Log.d(TAG, "Saving preferences...")
             GamePreferences.apply {
                 setUsername(username)
                 setCountry(country.code)
@@ -147,16 +162,19 @@ class SignUpActivity : AppCompatActivity() {
                 setExchangeRate(country.exchangeRate)
             }
 
-            // Appliquer la langue
+            // Appliquer la langue et devise
             LanguageManager.setLanguage(language)
             CurrencyManager.setCurrency(currency)
             CurrencyManager.setExchangeRate(country.exchangeRate)
 
+            Log.d(TAG, "Registration successful, launching HomeActivity...")
+            
             // Redirection
             startActivity(Intent(this, HomeActivity::class.java))
             finish()
 
         } catch (e: Exception) {
+            Log.e(TAG, "registerUser error: ${e.message}", e)
             e.printStackTrace()
             Toast.makeText(this, "Erreur lors de l'inscription: ${e.message}", Toast.LENGTH_LONG).show()
         }
