@@ -157,20 +157,20 @@
 
     </ScrollView>
 
-    <!-- Bannière AdMob -->
-    <LinearLayout
+    <!-- Bannière AdMob - SIMPLIFIÉ -->
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
+        android:layout_height="50dp"
         android:layout_marginTop="8dp">
 
         <com.google.android.gms.ads.AdView
             android:id="@+id/adView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal|bottom"
             app:adSize="BANNER"
             app:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>
