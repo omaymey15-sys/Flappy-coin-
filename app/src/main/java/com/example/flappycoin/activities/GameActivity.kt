@@ -3,6 +3,9 @@ package com.example.flappycoin.activities
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.R
@@ -18,8 +21,6 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // ✅ CORRECTION 1 : Initialiser GameView avec le callback onGameOver
         gameView = GameView(this) { score, coins, distance, time ->
             showGameOver(score, coins, distance, time)
         }
@@ -51,12 +52,10 @@ class GameActivity : AppCompatActivity() {
                 if (AdManager.isRewardedAdLoaded()) {
                     AdManager.showRewardedAd(this) { reward ->
                         GamePreferences.addCoins(reward)
-                        // ✅ CORRECTION 2 : Appeler la méthode revive() pour relancer le jeu
                         gameView.revive()
                     }
                 } else {
                     Toast.makeText(this, "Pub non disponible", Toast.LENGTH_SHORT).show()
-                    // ✅ CORRECTION 2 : Appeler la méthode revive() pour relancer le jeu
                     gameView.revive()
                 }
             }
