@@ -1,43 +1,74 @@
-package com.example.flappycoin
+package com.example.flappycoin.activities
 
-import android.app.Application
+import android.content.Intent
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
-import com.example.flappycoin.managers.CurrencyManager
-import com.example.flappycoin.managers.SoundManager
-import com.example.flappycoin.utils.CrashHandler
-import com.example.flappycoin.utils.LanguageManager
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.flappycoin.R
+import com.example.flappycoin.managers.GamePreferences
+import com.example.flappycoin.utils.NetworkManager
 
-class MyApplication : Application() {
+/**
+ * MainActivity - Écran Splash
+ * Vérification réseau + redirection
+ */
+class MainActivity : AppCompatActivity() {
     
     companion object {
-        private const val TAG = "MyApplication"
+        private const val TAG = "MainActivity"
     }
-    
-    override fun onCreate() {
-        super.onCreate()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         
         try {
-            Log.d(TAG, "🚀 Application démarrage...")
+            Log.d(TAG, "🎬 MainActivity onCreate")
+            setContentView(R.layout.activity_main)
+
+            // Vérifier connexion réseau
+            if (!NetworkManager.isInternetAvailable(this)) {
+                Log.e(TAG, "❌ Pas de connexion internet")
+                Toast.makeText(
+                    this,
+                    "Connexion internet requise pour jouer!",
+                    Toast.LENGTH_LONG
+                ).show()
+                finish()
+                return
+            }
             
-            // ✅ Active le crash handler IMMÉDIATEMENT (avant tout le reste!)
-            CrashHandler.setupGlobalCrashHandler(this)
-            Log.d(TAG, "✅ CrashHandler initialisé")
-            
-            // Initialise les managers
-            SoundManager.init(this)
-            Log.d(TAG, "✅ SoundManager initialisé")
-            
-            CurrencyManager.init()
-            Log.d(TAG, "✅ CurrencyManager initialisé")
-            
-            LanguageManager.init(this)
-            Log.d(TAG, "✅ LanguageManager initialisé")
-            
-            Log.d(TAG, "✅✅✅ Application prête!")
+            Log.d(TAG, "✅ Connexion internet OK")
+
+            // Splash écran 2 secondes
+            Handler(Looper.getMainLooper()).postDelayed({
+                try {
+                    // Vérifier si utilisateur enregistré
+                    val username = GamePreferences.getUsername()
+                    Log.d(TAG, "Username: $username")
+                    
+                    val intent = if (username.isNullOrEmpty()) {
+                        Log.d(TAG, "→ Redirection SignUpActivity")
+                        Intent(this, SignUpActivity::class.java)
+                    } else {
+                        Log.d(TAG, "→ Redirection HomeActivity")
+                        Intent(this, HomeActivity::class.java)
+                    }
+
+                    startActivity(intent)
+                    finish()
+                } catch (e: Exception) {
+                    Log.e(TAG, "❌ Erreur redirection", e)
+                    finish()
+                }
+            }, 2000)
             
         } catch (e: Exception) {
-            Log.e(TAG, "❌ ERREUR initialisation MyApplication", e)
+            Log.e(TAG, "❌ ERREUR MainActivity onCreate", e)
             e.printStackTrace()
+            finish()
         }
     }
 }
