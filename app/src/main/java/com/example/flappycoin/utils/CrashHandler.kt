@@ -26,16 +26,18 @@ object CrashHandler {
         
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
-                Log.e(TAG, "=".repeat(80))
+                val separator = "=".repeat(80)
+                
+                Log.e(TAG, separator)
                 Log.e(TAG, "💥 CRASH GLOBAL DÉTECTÉ 💥")
-                Log.e(TAG, "=".repeat(80))
+                Log.e(TAG, separator)
                 Log.e(TAG, "Thread: ${thread.name}")
                 Log.e(TAG, "Exception: ${throwable::class.simpleName}")
                 Log.e(TAG, "Message: ${throwable.message}")
                 Log.e(TAG, "Cause: ${throwable.cause}")
                 Log.e(TAG, "-".repeat(80))
                 Log.e(TAG, throwable.stackTraceToString())
-                Log.e(TAG, "=".repeat(80))
+                Log.e(TAG, separator)
                 
                 // Sauvegarde le crash
                 saveCrashLog(app, throwable)
@@ -67,9 +69,12 @@ object CrashHandler {
             val logFile = File(logDir, "crash_$timestamp.txt")
             
             FileWriter(logFile).use { writer ->
-                writer.write("=" * 80 + "\n")
+                val separator = "=".repeat(80)
+                val dash = "-".repeat(80)
+                
+                writer.write("$separator\n")
                 writer.write("CRASH FLAPPYCOIN\n")
-                writer.write("=" * 80 + "\n")
+                writer.write("$separator\n")
                 writer.write("Timestamp: $timestamp\n")
                 writer.write("Device: ${android.os.Build.DEVICE}\n")
                 writer.write("Model: ${android.os.Build.MODEL}\n")
@@ -80,9 +85,9 @@ object CrashHandler {
                 writer.write("Cause: ${throwable.cause}\n\n")
                 
                 writer.write("Stack Trace:\n")
-                writer.write("-" * 80 + "\n")
+                writer.write("$dash\n")
                 writer.write(throwable.stackTraceToString())
-                writer.write("\n" + "=" * 80 + "\n")
+                writer.write("\n$separator\n")
             }
             
             Log.d(TAG, "✅ Crash log sauvegardé: ${logFile.absolutePath}")
