@@ -4,51 +4,44 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="#1a1a2e">
 
-    <!-- Header avec solde -->
-    <FrameLayout
+    <!-- Header -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginBottom="16dp">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="#2a2a3e"
+        android:gravity="center_vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/tvBalance"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center_vertical"
-            android:background="#2a2a3e"
-            android:layout_margin="8dp">
+            android:layout_height="wrap_content"
+            android:text="Solde: $0.00"
+            android:textColor="#FFD700"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="16dp"/>
 
-            <TextView
-                android:id="@+id/tvBalance"
-                android:text="Solde: $0.00"
-                android:textColor="#FFD700"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginEnd="16dp" />
-
-            <TextView
-                android:id="@+id/tvCoinsCount"
-                android:text="🪙 0"
-                android:textColor="@android:color/white"
-                android:textSize="18sp" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvCoinsCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🪙 0"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btnWithdraw"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
+            android:layout_height="wrap_content"
             android:text="Retirer"
             android:background="#4CAF50"
-            android:textColor="@android:color/white"
-            android:padding="12dp" />
-
-    </FrameLayout>
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
 
     <!-- Infos utilisateur -->
     <LinearLayout
@@ -56,32 +49,35 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:layout_marginBottom="16dp"
         android:background="#2a2a3e"
+        android:layout_marginTop="10dp"
         android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/tvUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Guest"
             android:textColor="#FFD700"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_weight="1" />
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/tvBestScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Best: 0"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
-
+            android:textSize="16sp"/>
     </LinearLayout>
 
-    <!-- ScrollView pour les boutons -->
+    <!-- Boutons -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="16dp">
+        android:padding="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,82 +86,80 @@
 
             <Button
                 android:id="@+id/btnPlay"
-                android:text="▶️ JOUER"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_marginBottom="12dp"
+                android:text="▶️ JOUER"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:background="#FF6B6B"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
 
             <Button
                 android:id="@+id/btnShop"
-                android:text="🛍️ BOUTIQUE"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_marginBottom="12dp"
+                android:text="🛍️ BOUTIQUE"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:background="#4169E1"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
 
             <Button
                 android:id="@+id/btnStats"
-                android:text="📊 STATISTIQUES"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_marginBottom="12dp"
+                android:text="📊 STATISTIQUES"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:background="#FF8C00"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
 
             <Button
                 android:id="@+id/btnLeaderboard"
-                android:text="🏆 CLASSEMENT"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_marginBottom="12dp"
+                android:text="🏆 CLASSEMENT"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:background="#9370DB"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
 
             <Button
                 android:id="@+id/btnHelp"
-                android:text="❓ AIDE"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_marginBottom="12dp"
+                android:text="❓ AIDE"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:background="#20B2AA"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
 
             <Button
                 android:id="@+id/btnSettings"
-                android:text="⚙️ PARAMÈTRES"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
+                android:text="⚙️ PARAMÈTRES"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:background="#696969"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
 
     </ScrollView>
 
-    <!-- Bannière AdMob CORRIGÉE -->
+    <!-- Bannière AdMob -->
     <com.google.android.gms.ads.AdView
         android:id="@+id/adView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
 
 </LinearLayout>
