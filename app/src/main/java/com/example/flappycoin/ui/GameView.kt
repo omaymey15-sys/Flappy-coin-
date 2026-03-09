@@ -1,4 +1,4 @@
-package com.example.flappycoin
+package com.example.flappycoin.iu
 
 import android.content.Context
 import android.graphics.*
