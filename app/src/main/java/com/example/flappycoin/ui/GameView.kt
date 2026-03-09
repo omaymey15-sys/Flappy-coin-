@@ -1,3 +1,64 @@
+package com.example.flappycoin.ui
+
+import android.content.Context
+import android.graphics.*
+import android.media.AudioAttributes
+import android.media.SoundPool
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.view.MotionEvent
+import android.view.SurfaceView
+import com.example.flappycoin.R
+import com.example.flappycoin.managers.GamePreferences
+import com.example.flappycoin.utils.Constants
+import kotlin.random.Random
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
+import kotlin.math.cos
+
+class GameView(
+    context: Context,
+    private val onGameOver: (score: Int, coins: Int, distance: Int, time: Long) -> Unit
+) : SurfaceView(context), Runnable {
+
+    enum class GameState { START, PLAYING, PAUSED, GAME_OVER }
+    enum class ObstacleType { PIPE, SPIKE, MOVING_PIPE, WIND_CURRENT }
+
+    private var currentState = GameState.START
+    private var playing = false
+    private var gameThread: Thread? = null
+
+    private val screenW = context.resources.displayMetrics.widthPixels
+    private val screenH = context.resources.displayMetrics.heightPixels
+    private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+
+    // ================= ASSETS =================
+    private val bgBmp: Bitmap
+    private val baseBmp: Bitmap
+    private val pipeBmp: Bitmap
+    private val pipeTopBmp: Bitmap
+    private val birdFrames = mutableListOf<Bitmap>()
+    private var spikeBmp: Bitmap? = null
+
+    // ================= DÉCOR =================
+    private var bgX1 = 0f
+    private var bgX2 = 0f
+    private var baseX1 = 0f
+    private var baseX2 = 0f
+    private var scrollSpeed = 6.5f
+    private val scrollAcceleration = 0.001f
+
+    // ================= OISEAU =================
+    private var birdX = 0f
+    private var birdY = 0f
+    private var birdW = 0
+    private var birdH = 0
+    private var birdVel = 0f
+    private var birdRotation = 0f
+    private var gravity = 0.6f
+    private var jumpImpulse = -12f
+
     private val maxFallSpeed = 20f
     private val maxRiseSpeed = -18f
     private var birdAnimIndex = 0
