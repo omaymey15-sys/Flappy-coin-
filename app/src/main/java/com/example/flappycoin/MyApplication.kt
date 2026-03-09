@@ -3,6 +3,7 @@ package com.example.flappycoin
 import android.app.Application
 import android.util.Log
 import com.example.flappycoin.managers.CurrencyManager
+import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.SoundManager
 import com.example.flappycoin.utils.CrashHandler
 import com.example.flappycoin.utils.LanguageManager
@@ -18,6 +19,10 @@ class MyApplication : Application() {
         
         try {
             Log.d(TAG, "🚀 Application démarrage...")
+            
+            // ✅ Initialise les SharedPreferences AVANT le crash handler
+            GamePreferences.init(this)
+            Log.d(TAG, "✅ GamePreferences initialisé")
             
             // ✅ Active le crash handler IMMÉDIATEMENT (avant tout le reste!)
             CrashHandler.setupGlobalCrashHandler(this)
