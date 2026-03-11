@@ -1,171 +1,83 @@
 package com.example.flappycoin.managers
 
 import android.app.Activity
-import android.app.Application
 import android.content.Context
 import android.util.Log
-import android.view.View
-import android.widget.FrameLayout
-import com.google.android.gms.ads.*
-import com.google.android.gms.ads.appopen.AppOpenAd
+import com.example.flappycoin.utils.Constants
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.example.flappycoin.utils.Constants
 
+/**
+ * Gestion complète AdMob
+ * Banner, Interstitiel, Récompensée
+ */
 object AdManager {
+    private var rewardedAd: RewardedAd? = null
+    private var isLoadingRewarded = false
 
-private const val TAG = "AdManager"  
+    fun init(context: Context) {
+        try {
+            MobileAds.initialize(context)
+            loadRewardedAd(context)
+        } catch (e: Exception) {
+            Log.e("AdManager", "Erreur init AdMob", e)
+        }
+    }
 
-// ───────────── BANNER ─────────────  
-private var bannerAdView: AdView? = null  
+    // ============= PUBLICITÉ RÉCOMPENSÉE =============
 
-fun showBanner(context: Context, container: FrameLayout) {  
-    if (bannerAdView == null) {  
-        bannerAdView = AdView(context).apply {  
-            adSize = AdSize.BANNER  
-            adUnitId = Constants.BANNER_AD_UNIT_ID  
-        }  
-        container.addView(bannerAdView)  
-        bannerAdView?.loadAd(AdRequest.Builder().build())  
-    } else {  
-        if (bannerAdView?.parent == null) container.addView(bannerAdView)  
-    }  
-    bannerAdView?.visibility = View.VISIBLE  
-    Log.d(TAG, "Banner affichée")  
-}  
+    fun loadRewardedAd(context: Context) {
+        if (isLoadingRewarded || rewardedAd != null) return
 
-fun hideBanner() {  
-    bannerAdView?.visibility = View.GONE  
-}  
+        isLoadingRewarded = true
+        val adRequest = AdRequest.Builder().build()
 
-// ───────────── REWARDED ─────────────  
-private var rewardedAd: RewardedAd? = null  
-private var isLoadingRewarded = false  
-private var lastRewardedTime = 0L  
+        RewardedAd.load(
+            context,
+            Constants.REWARDED_AD_UNIT_ID,
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.d("AdManager", "Pub récompensée échouée: ${adError.message}")
+                    isLoadingRewarded = false
+                }
 
-fun loadRewarded(context: Context) {  
-    if (isLoadingRewarded || rewardedAd != null) return  
-    isLoadingRewarded = true  
+                override fun onAdLoaded(ad: RewardedAd) {
+                    rewardedAd = ad
+                    isLoadingRewarded = false
+                    Log.d("AdManager", "Pub récompensée chargée")
+                }
+            }
+        )
+    }
 
-    RewardedAd.load(  
-        context,  
-        Constants.REWARDED_AD_UNIT_ID,  
-        AdRequest.Builder().build(),  
-        object : RewardedAdLoadCallback() {  
-            override fun onAdLoaded(ad: RewardedAd) {  
-                rewardedAd = ad  
-                isLoadingRewarded = false  
-                Log.d(TAG, "Rewarded chargée")  
-            }  
+    fun showRewardedAd(activity: Activity, callback: (Int) -> Unit) {
+        if (rewardedAd == null) {
+            Log.d("AdManager", "Pub récompensée non disponible")
+            return
+        }
 
-            override fun onAdFailedToLoad(adError: LoadAdError) {  
-                Log.e(TAG, "Rewarded échouée: ${adError.message}")  
-                isLoadingRewarded = false  
-            }  
-        }  
-    )  
-}  
+        if (!canShowRewardedAd()) {
+            Log.d("AdManager", "Intervalle minimum non atteint")
+            return
+        }
 
-fun canShowRewarded(): Boolean {  
-    return System.currentTimeMillis() - lastRewardedTime >= Constants.REWARDED_AD_INTERVAL_MS  
-}  
+        rewardedAd?.show(activity) { rewardItem ->
+            val reward = Constants.REWARDED_AD_BONUS
+            callback(reward)
+            GamePreferences.setLastRewardedAdTime(System.currentTimeMillis())
+        }
+        rewardedAd = null
+        loadRewardedAd(activity)
+    }
 
-fun showRewarded(activity: Activity, onReward: () -> Unit) {  
-    if (rewardedAd == null || !canShowRewarded()) {  
-        Log.d(TAG, "Rewarded non disponible ou intervalle non atteint")  
-        return  
-    }  
+    fun canShowRewardedAd(): Boolean {
+        val lastTime = GamePreferences.getLastRewardedAdTime()
+        return System.currentTimeMillis() - lastTime >= Constants.REWARDED_AD_INTERVAL_MS
+    }
 
-    rewardedAd?.show(activity) { rewardItem ->  
-        onReward()  
-        lastRewardedTime = System.currentTimeMillis()  
-    }  
-
-    rewardedAd = null  
-    loadRewarded(activity)  
-}  
-
-// ───────────── INTERSTITIAL ─────────────  
-private var interstitialAd: InterstitialAd? = null  
-private var isLoadingInterstitial = false  
-
-fun loadInterstitial(context: Context) {  
-    if (isLoadingInterstitial || interstitialAd != null) return  
-    isLoadingInterstitial = true  
-
-    InterstitialAd.load(  
-        context,  
-        Constants.INTERSTITIAL_AD_UNIT_ID,  
-        AdRequest.Builder().build(),  
-        object : InterstitialAdLoadCallback() {  
-            override fun onAdLoaded(ad: InterstitialAd) {  
-                interstitialAd = ad  
-                isLoadingInterstitial = false  
-                Log.d(TAG, "Interstitial chargée")  
-            }  
-
-            override fun onAdFailedToLoad(adError: LoadAdError) {  
-                Log.e(TAG, "Interstitial échouée: ${adError.message}")  
-                isLoadingInterstitial = false  
-            }  
-        }  
-    )  
-}  
-
-fun showInterstitial(activity: Activity) {  
-    interstitialAd?.let { ad ->  
-        ad.show(activity)  
-        interstitialAd = null  
-        loadInterstitial(activity)  
-    } ?: Log.d(TAG, "Interstitial non chargée")  
-}  
-
-// ───────────── APP OPEN ─────────────  
-private var appOpenAd: AppOpenAd? = null  
-private var isAppOpenLoading = false  
-
-fun loadAppOpen(application: Application) {  
-    if (isAppOpenLoading || appOpenAd != null) return  
-    isAppOpenLoading = true  
-
-    AppOpenAd.load(  
-        application,  
-        Constants.APP_OPEN_AD_UNIT_ID,  
-        AdRequest.Builder().build(),  
-        AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT,  
-        object : AppOpenAd.AppOpenAdLoadCallback() {  
-            override fun onAdLoaded(ad: AppOpenAd) {  
-                appOpenAd = ad  
-                isAppOpenLoading = false  
-                Log.d(TAG, "AppOpen chargée")  
-            }  
-
-            override fun onAdFailedToLoad(loadAdError: LoadAdError) {  
-                Log.e(TAG, "AppOpen échouée: ${loadAdError.message}")  
-                isAppOpenLoading = false  
-            }  
-        }  
-    )  
-}  
-
-fun showAppOpen(activity: Activity) {  
-    appOpenAd?.show(activity)  
-    appOpenAd = null  
-}  
-
-// ───────────── INITIALISATION GLOBALE ─────────────  
-fun init(application: Application) {  
-    MobileAds.initialize(application)  
-    loadBanner(application)  
-    loadRewarded(application)  
-    loadInterstitial(application)  
-    loadAppOpen(application)  
-}  
-
-private fun loadBanner(context: Context) {  
-    // Chargement initial si nécessaire  
-}
-
+    fun isRewardedAdLoaded(): Boolean = rewardedAd != null
 }
