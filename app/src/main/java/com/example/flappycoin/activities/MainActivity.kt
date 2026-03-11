@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.utils.NetworkManager
-
+import com.example.flappycoin.utils.Constants
 class MainActivity : AppCompatActivity() {
 
     companion object {
