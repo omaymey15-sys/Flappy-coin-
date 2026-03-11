@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
     android:background="#1a1a1a">
 
+    <!-- Titre -->
     <TextView
         android:text="❓ AIDE"
         android:textSize="28sp"
@@ -16,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
+    <!-- Zone de texte scrollable -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -32,9 +35,9 @@
             android:padding="12dp"
             android:background="#2a2a3e"
             android:lineSpacingMultiplier="1.5"/>
-
     </ScrollView>
 
+    <!-- Bouton Retour -->
     <Button
         android:id="@+id/btnBack"
         android:text="← Retour"
@@ -42,5 +45,14 @@
         android:layout_height="50dp"
         android:background="#4169E1"
         android:textColor="@android:color/white"/>
+
+    <!-- Bannière AdMob -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 
 </LinearLayout>
