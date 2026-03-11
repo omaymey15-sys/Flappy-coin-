@@ -1,205 +1,61 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ads="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#1a1a1a">
+package com.example.flappycoin.activities
 
-    <!-- Titre -->
-    <TextView
-        android:text="📊 STATISTIQUES"
-        android:textSize="28sp"
-        android:textColor="#FFD700"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"
-        android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.flappycoin.databinding.ActivityStatsBinding
+import com.example.flappycoin.managers.AdManager
+import com.example.flappycoin.managers.CurrencyManager
+import com.example.flappycoin.managers.GamePreferences
 
-    <!-- ScrollView des stats -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+class StatsActivity : AppCompatActivity() {
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    private lateinit var binding: ActivityStatsBinding
 
-            <!-- Parties jouées -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-                <TextView
-                    android:text="Parties jouées"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+        try {
+            // 🔹 Initialisation du binding
+            binding = ActivityStatsBinding.inflate(layoutInflater)
+            setContentView(binding.root)
 
-                <TextView
-                    android:id="@+id/tvTotalGames"
-                    android:text="0"
-                    android:textColor="#FFD700"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+            // 🔹 Initialisation AdManager et banner
+            AdManager.init(this)
+            AdManager.loadBanner(binding.adView)
 
-            </LinearLayout>
+            // 🔹 Récupérer les stats en toute sécurité
+            val bestScore = GamePreferences.getBestScore()
+            val bestCoins = GamePreferences.getBestCoins()
+            val totalCoins = GamePreferences.getTotalCoins()
+            val gamesPlayed = GamePreferences.getGamesPlayed()
+            val totalDistance = GamePreferences.getTotalDistance()
+            val totalTime = GamePreferences.getTotalTime()
 
-            <!-- Meilleur score -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
+            val localAmount = CurrencyManager.coinsToLocalCurrency(bestCoins)
+            val avgScore = if (gamesPlayed > 0) bestScore / gamesPlayed else 0
+            val timeSeconds = totalTime / 1000
 
-                <TextView
-                    android:text="Meilleur score"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+            // 🔹 Afficher les stats
+            binding.tvTotalGames.text = "Parties jouées: $gamesPlayed"
+            binding.tvBestScore.text = "Meilleur score: $bestScore"
+            binding.tvBestCoins.text = "Meilleure collecte: $bestCoins ($localAmount)"
+            binding.tvTotalDistance.text = "Distance totale: ${totalDistance / 10}m"
+            binding.tvTotalTime.text = "Temps total: ${timeSeconds}s"
+            binding.tvAverageScore.text = "Score moyen: $avgScore"
 
-                <TextView
-                    android:id="@+id/tvBestScore"
-                    android:text="0"
-                    android:textColor="#FFD700"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+            // 🔹 Bouton retour
+            binding.btnBack.setOnClickListener { finish() }
 
-            </LinearLayout>
-
-            <!-- Meilleure collecte -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
-
-                <TextView
-                    android:text="Meilleure collecte"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/tvBestCoins"
-                    android:text="0"
-                    android:textColor="#FFD700"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <!-- Distance totale -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
-
-                <TextView
-                    android:text="Distance totale"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/tvTotalDistance"
-                    android:text="0m"
-                    android:textColor="#FFD700"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <!-- Temps total -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
-
-                <TextView
-                    android:text="Temps total"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/tvTotalTime"
-                    android:text="0s"
-                    android:textColor="#FFD700"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <!-- Score moyen -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
-
-                <TextView
-                    android:text="Score moyen"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <TextView
-                    android:id="@+id/tvAverageScore"
-                    android:text="0"
-                    android:textColor="#FFD700"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <!-- Bouton Retour -->
-    <Button
-        android:id="@+id/btnBack"
-        android:text="← Retour"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:background="#4169E1"
-        android:textColor="#FFFFFF" />
-
-    <!-- Bannière AdMob -->
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
-
-</LinearLayout>
+        } catch (e: Exception) {
+            Log.e("StatsActivity", "Erreur onCreate", e)
+            Toast.makeText(
+                this,
+                "⚠️ StatsActivity crash\nType: ${e::class.simpleName}\nMessage: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
+            finish()
+        }
+    }
+}
