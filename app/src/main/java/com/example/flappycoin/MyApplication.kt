@@ -9,37 +9,35 @@ import com.example.flappycoin.utils.CrashHandler
 import com.example.flappycoin.utils.LanguageManager
 
 class MyApplication : Application() {
-    
+
     companion object {
         private const val TAG = "MyApplication"
     }
-    
+
     override fun onCreate() {
         super.onCreate()
-        
+
         try {
             Log.d(TAG, "🚀 Application démarrage...")
-            
-            // ✅ Initialise les SharedPreferences AVANT le crash handler
+
             GamePreferences.init(this)
             Log.d(TAG, "✅ GamePreferences initialisé")
-            
-            // ✅ Active le crash handler IMMÉDIATEMENT (avant tout le reste!)
+
             CrashHandler.setupGlobalCrashHandler(this)
             Log.d(TAG, "✅ CrashHandler initialisé")
-            
-            // Initialise les managers
+
             SoundManager.init(this)
             Log.d(TAG, "✅ SoundManager initialisé")
-            
-            CurrencyManager.init()
+
+            // ✅ CORRECTION ICI
+            CurrencyManager.init(GamePreferences)
             Log.d(TAG, "✅ CurrencyManager initialisé")
-            
+
             LanguageManager.init(this)
             Log.d(TAG, "✅ LanguageManager initialisé")
-            
+
             Log.d(TAG, "✅✅✅ Application prête!")
-            
+
         } catch (e: Exception) {
             Log.e(TAG, "❌ ERREUR initialisation MyApplication", e)
             e.printStackTrace()
