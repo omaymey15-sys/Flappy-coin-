@@ -6,16 +6,16 @@
     android:padding="16dp"
     android:background="#1a1a1a">
 
-    <!-- Titre -->
     <TextView
         android:text="❓ AIDE"
         android:textSize="28sp"
         android:textColor="#FFD700"
         android:textStyle="bold"
         android:layout_marginBottom="16dp"
-        android:gravity="center" />
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-    <!-- Zone de texte scrollable -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -24,22 +24,23 @@
 
         <TextView
             android:id="@+id/tvHelp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="Aide..."
             android:textSize="14sp"
             android:textColor="@android:color/white"
             android:padding="12dp"
             android:background="#2a2a3e"
-            android:lineSpacingMultiplier="1.5" />
+            android:lineSpacingMultiplier="1.5"/>
 
     </ScrollView>
 
-    <!-- Bouton Retour -->
     <Button
         android:id="@+id/btnBack"
         android:text="← Retour"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="#4169E1"
-        android:textColor="@android:color/white" />
+        android:textColor="@android:color/white"/>
 
 </LinearLayout>
