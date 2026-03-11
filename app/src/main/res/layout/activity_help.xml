@@ -9,6 +9,7 @@
 
     <!-- Titre -->
     <TextView
+        android:id="@+id/tvTitle"
         android:text="❓ AIDE"
         android:textSize="28sp"
         android:textColor="#FFD700"
@@ -43,6 +44,7 @@
         android:text="← Retour"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
         android:background="#4169E1"
         android:textColor="@android:color/white"/>
 
@@ -53,6 +55,5 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
-
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
 </LinearLayout>
