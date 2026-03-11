@@ -23,8 +23,8 @@ class HomeActivity : AppCompatActivity() {
             binding = ActivityHomeBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            // 🔹 Initialisation pub banner
-            AdManager.init(this)
+            // 🔹 Initialisation pub banner avec applicationContext
+            AdManager.init(applicationContext)
             AdManager.loadBanner(binding.adView)
 
             updateUI()
@@ -46,40 +46,30 @@ class HomeActivity : AppCompatActivity() {
             }
             SoundManager.playTap()
             startActivity(Intent(this, GameActivity::class.java))
-
-            // Rewarded toutes les 5 minutes après jeu
             showRewardedIfReady()
         }
 
         binding.btnShop.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, ShopActivity::class.java))
-
-            // Rewarded à l'ouverture de la boutique
             showRewardedIfReady()
         }
 
         binding.btnStats.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, StatsActivity::class.java))
-
-            // Interstitiel stats
             AdManager.showInterstitial(this)
         }
 
         binding.btnLeaderboard.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, LeaderboardActivity::class.java))
-
-            // Interstitiel classement
             AdManager.showInterstitial(this)
         }
 
         binding.btnHelp.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, HelpActivity::class.java))
-
-            // Interstitiel aide
             AdManager.showInterstitial(this)
         }
 
@@ -95,8 +85,6 @@ class HomeActivity : AppCompatActivity() {
 
     private fun updateUI() {
         try {
-            Log.d("HomeActivity", "updateUI started")
-
             val coins = GamePreferences.getTotalCoins()
             val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
             val username = GamePreferences.getUsername() ?: "Guest"
@@ -107,7 +95,6 @@ class HomeActivity : AppCompatActivity() {
             binding.tvCoinsCount.text = "🪙 $coins"
             binding.tvBestScore.text = "Best: $bestScore"
 
-            Log.d("HomeActivity", "✅ updateUI completed")
         } catch (e: Exception) {
             Log.e("HomeActivity", "updateUI failed", e)
             Toast.makeText(this, "Erreur mise à jour UI", Toast.LENGTH_SHORT).show()
@@ -144,13 +131,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        try {
-            updateUI()
-
-            // Rewarded toutes les 5 minutes quand on revient au menu
-            showRewardedIfReady()
-        } catch (e: Exception) {
-            Log.e("HomeActivity", "onResume failed", e)
-        }
+        updateUI()
+        showRewardedIfReady()
     }
 }
