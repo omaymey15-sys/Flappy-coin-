@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityStatsBinding
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
+import com.example.flappycoin.managers.AdManager
 
 class StatsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStatsBinding
@@ -14,6 +15,7 @@ class StatsActivity : AppCompatActivity() {
         binding = ActivityStatsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ================= STATS =================
         val bestScore = GamePreferences.getBestScore()
         val bestCoins = GamePreferences.getBestCoins()
         val totalCoins = GamePreferences.getTotalCoins()
@@ -32,8 +34,14 @@ class StatsActivity : AppCompatActivity() {
         binding.tvTotalTime.text = "Temps total: ${timeSeconds}s"
         binding.tvAverageScore.text = "Score moyen: $avgScore"
 
-        binding.btnBack.setOnClickListener {
-            finish()
-        }
+        // ================= BOUTON RETOUR =================
+        binding.btnBack.setOnClickListener { finish() }
+
+        // ================= PUBS =================
+        // Banner en bas de la page Stats
+        AdManager.loadBanner(binding.adView)
+
+        // Interstitial à l’ouverture de StatsActivity
+        AdManager.showInterstitial(this)
     }
 }
