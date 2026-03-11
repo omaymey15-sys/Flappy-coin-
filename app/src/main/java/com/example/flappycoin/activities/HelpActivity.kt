@@ -6,24 +6,26 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityHelpBinding
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.example.flappycoin.utils.AdHelper
 
 class HelpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHelpBinding
+    private val TAG = "HelpActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         try {
-            // 🔹 Inflate layout
             binding = ActivityHelpBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
             // 🔹 Texte d'aide
             binding.tvHelp.text = """
                 🎮 COMMENT JOUER
-                
                 1️⃣ Appuyez pour faire voler l'oiseau
                 2️⃣ Évitez les tuyaux verts
                 3️⃣ Collectez les pièces 🪙
@@ -55,26 +57,27 @@ class HelpActivity : AppCompatActivity() {
                 Développé en Kotlin
             """.trimIndent()
 
-            // 🔹 Bouton retour
             binding.btnBack.setOnClickListener { finish() }
 
-            // 🔹 Initialisation AdMob
-            MobileAds.initialize(this) { Log.d("HelpActivity", "AdMob initialized") }
-
-            // 🔹 Charger la bannière
+            // 🔹 Initialisation AdMob banner
+            MobileAds.initialize(this) { Log.d(TAG, "AdMob initialized") }
             val adRequest = AdRequest.Builder().build()
             binding.adView.loadAd(adRequest)
+            binding.adView.adListener = object : AdListener() {
+                override fun onAdLoaded() { Log.d(TAG, "Banner loaded") }
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.e(TAG, "Banner failed: ${adError.message}")
+                }
+            }
+
+            // 🔹 Interstitial
+            AdHelper.loadInterstitial(this)
+            binding.root.postDelayed({ AdHelper.showInterstitial(this) }, 500)
 
         } catch (e: Exception) {
-            // 🔹 Log complet
-            Log.e("HelpActivity", "Exception dans onCreate", e)
-
-            // 🔹 Toast pour voir l'erreur sur l'appareil
-            Toast.makeText(
-                this,
-                "⚠️ HelpActivity crash\nType: ${e::class.simpleName}\nMessage: ${e.message}",
-                Toast.LENGTH_LONG
-            ).show()
+            Log.e(TAG, "Error onCreate", e)
+            Toast.makeText(this, "Erreur HelpActivity: ${e.message}", Toast.LENGTH_LONG).show()
+            finish()
         }
     }
 }
