@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityLeaderboardBinding
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.GamePreferences
-
+import com.example.flappycoin.utils.Constants
 class LeaderboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLeaderboardBinding
 
