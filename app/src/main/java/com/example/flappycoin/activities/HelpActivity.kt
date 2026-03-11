@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityHelpBinding
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.SoundManager
-import com.example.flappycoin.utils.Constants
+
 class HelpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHelpBinding
@@ -19,11 +19,11 @@ class HelpActivity : AppCompatActivity() {
             binding = ActivityHelpBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            // 🔹 Initialisation AdManager et chargement de la banner
-            AdManager.init(this)
+            // 🔹 Initialisation AdManager avec applicationContext
+            AdManager.init(applicationContext)
             AdManager.loadBanner(binding.adView)
 
-            // 🔹 Afficher un interstitiel à l’ouverture (optionnel)
+            // 🔹 Afficher un interstitiel à l’ouverture
             AdManager.showInterstitial(this)
 
             // 🔹 Texte d’aide
