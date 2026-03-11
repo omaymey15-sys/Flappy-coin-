@@ -1,44 +1,31 @@
 package com.example.flappycoin.activities
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flappycoin.databinding.ActivityShopBinding
-import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.GamePreferences
+import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.models.ShopItem
 import com.example.flappycoin.ui.ShopAdapter
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
 
 class ShopActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityShopBinding
     private lateinit var shopItems: MutableList<ShopItem>
-    private lateinit var adapter: ShopAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityShopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 🔹 Initialisation AdMob
-        MobileAds.initialize(this) { Log.d("ShopActivity", "AdMob initialized") }
-        val adRequest = AdRequest.Builder().build()
-        binding.adView.loadAd(adRequest)
-        binding.adView.adListener = object : AdListener() {
-            override fun onAdLoaded() { Log.d("ShopActivity", "Ad loaded") }
-            override fun onAdFailedToLoad(error: LoadAdError) { Log.e("ShopActivity", "Ad failed: $error") }
-        }
+        // Solde
+        val coins = GamePreferences.getTotalCoins()
+        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
+        binding.tvBalance.text = "Solde: $localAmount"
 
-        // 🔹 Mise à jour solde
-        updateBalance()
-
-        // 🔹 Liste des items
+        // Items boutique
         shopItems = mutableListOf(
             ShopItem("Red Bird", "L'oiseau original", 0, true),
             ShopItem("Blue Bird", "Oiseau bleu mystérieux", 500, GamePreferences.isItemPurchased("Blue Bird")),
@@ -48,45 +35,36 @@ class ShopActivity : AppCompatActivity() {
             ShopItem("Coins Pack 100", "100 coins bonus", 50, GamePreferences.isItemPurchased("Coins Pack 100"))
         )
 
-        // 🔹 Adapter RecyclerView avec callback dynamique
-        adapter = ShopAdapter(shopItems) { item, position ->
-            purchaseItem(item, position)
+        // Adapter
+        val adapter = ShopAdapter(shopItems) { item ->
+            purchaseItem(item)
         }
 
         binding.rvShop.layoutManager = LinearLayoutManager(this)
         binding.rvShop.adapter = adapter
 
-        // 🔹 Bouton retour
+        // Retour
         binding.btnBack.setOnClickListener { finish() }
     }
 
-    private fun updateBalance() {
+    private fun purchaseItem(item: ShopItem) {
         val coins = GamePreferences.getTotalCoins()
-        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
-        binding.tvBalance.text = "Solde: $localAmount"
-    }
 
-    private fun purchaseItem(item: ShopItem, position: Int) {
         if (item.isPurchased) {
-            Toast.makeText(this, "${item.name} déjà acheté!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "${item.name} est déjà acheté!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        val coins = GamePreferences.getTotalCoins()
         if (coins < item.price) {
             Toast.makeText(this, "Pas assez de pièces!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        GamePreferences.apply {
-            removeCoins(item.price)
-            addPurchasedItem(item.name)
-        }
-
+        GamePreferences.removeCoins(item.price)
+        GamePreferences.addPurchasedItem(item.name)
         item.isPurchased = true
-        adapter.notifyItemChanged(position)
-        updateBalance()
 
         Toast.makeText(this, "${item.name} acheté!", Toast.LENGTH_SHORT).show()
+        binding.rvShop.adapter?.notifyDataSetChanged()
     }
 }
