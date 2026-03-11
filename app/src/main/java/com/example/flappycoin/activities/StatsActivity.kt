@@ -6,8 +6,10 @@ import com.example.flappycoin.databinding.ActivityStatsBinding
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.AdManager
-import com.example.flappycoin.utils.Constants
+import com.google.android.gms.ads.AdView
+
 class StatsActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityStatsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +41,11 @@ class StatsActivity : AppCompatActivity() {
 
         // ================= PUBS =================
         // Banner en bas de la page Stats
-        AdManager.loadBanner(binding.adView)
+        val adView: AdView = binding.adView
+        AdManager.loadBanner(adView)
 
         // Interstitial à l’ouverture de StatsActivity
-        AdManager.showInterstitial(this)
+        AdManager.loadInterstitial(this)      // Charger l’interstitiel
+        AdManager.showInterstitial(this)      // Afficher si prêt
     }
 }
