@@ -6,7 +6,7 @@ import com.example.flappycoin.databinding.ActivityStatsBinding
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.AdManager
-
+import com.example.flappycoin.utils.Constants
 class StatsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityStatsBinding
 
