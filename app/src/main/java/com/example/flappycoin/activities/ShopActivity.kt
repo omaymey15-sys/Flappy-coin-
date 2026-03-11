@@ -10,7 +10,7 @@ import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.models.ShopItem
 import com.example.flappycoin.ui.ShopAdapter
-
+import com.example.flappycoin.utils.Constants
 class ShopActivity : AppCompatActivity() {
     private lateinit var binding: ActivityShopBinding
 
