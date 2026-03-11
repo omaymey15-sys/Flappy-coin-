@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black">
+    android:background="#000000">
 
     <!-- GameView (SurfaceView) -->
     <View
@@ -24,12 +24,12 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:background="@drawable/card_background"
+            android:background="#2a2a3e"
             android:padding="8dp">
 
             <TextView
                 android:text="Score"
-                android:textColor="@android:color/white"
+                android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -37,7 +37,7 @@
             <TextView
                 android:id="@+id/tvGameScore"
                 android:text="0"
-                android:textColor="@color/gold"
+                android:textColor="#FFD700"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:background="@drawable/card_background"
+            android:background="#2a2a3e"
             android:padding="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp">
@@ -59,7 +59,7 @@
             <TextView
                 android:id="@+id/tvDistance"
                 android:text="0m"
-                android:textColor="@android:color/white"
+                android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -67,7 +67,7 @@
             <TextView
                 android:id="@+id/tvTime"
                 android:text="00:00"
-                android:textColor="@android:color/white"
+                android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:background="@drawable/card_background"
+            android:background="#2a2a3e"
             android:padding="8dp"
             android:gravity="center">
 
@@ -94,7 +94,7 @@
             <TextView
                 android:id="@+id/tvGameCoins"
                 android:text="0"
-                android:textColor="@color/gold"
+                android:textColor="#FFD700"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:gravity="center"
