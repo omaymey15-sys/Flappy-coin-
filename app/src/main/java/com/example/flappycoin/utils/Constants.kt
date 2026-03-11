@@ -4,7 +4,6 @@ package com.example.flappycoin.utils
  * Configuration globale de l'application FlappyCoin
  * Toutes les constantes métier et techniques
  */
-
 object Constants {
     // ============= CONVERSION MONÉTAIRE =============
     const val COINS_PER_DOLLAR = 10           // 10 coins = 1 USD
@@ -14,6 +13,7 @@ object Constants {
 
     // ============= PUBLICITÉS =============
     const val REWARDED_AD_INTERVAL_MS = 5 * 60 * 1000  // 5 minutes minimum
+    const val INTERSTITIAL_AD_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes minimum pour interstitiel
     const val INTERSTITIAL_SHOW_RATE = 0.35f           // 35% chance
 
     // IDs AdMob TEST - À remplacer en production!
@@ -21,6 +21,7 @@ object Constants {
     const val BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
     const val INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
     const val REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917"
+    const val APP_OPEN_AD_UNIT_ID = "ca-app-pub-3940256099942544/3419835294"
 
     // ============= JEU =============
     const val TARGET_FPS = 60
