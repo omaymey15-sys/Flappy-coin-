@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityHelpBinding
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.SoundManager
-
+import com.example.flappycoin.utils.Constants
 class HelpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHelpBinding
