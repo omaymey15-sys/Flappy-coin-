@@ -1,6 +1,8 @@
 package com.example.flappycoin.activities
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -10,27 +12,28 @@ import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.models.ShopItem
 import com.example.flappycoin.ui.ShopAdapter
+import com.example.flappycoin.utils.AdHelper
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
-import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 
 class ShopActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityShopBinding
+    private val TAG = "ShopActivity"
+    private val handler = Handler(Looper.getMainLooper())
+    private lateinit var rewardRunnable: Runnable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         try {
-            // 🔹 Inflate layout
             binding = ActivityShopBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
             // 🔹 Mise à jour solde
-            val coins = GamePreferences.getTotalCoins()
-            val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
-            binding.tvBalance.text = "Solde: $localAmount"
+            updateBalance()
 
             // 🔹 Liste des items du shop
             val shopItems = listOf(
@@ -43,41 +46,54 @@ class ShopActivity : AppCompatActivity() {
             )
 
             // 🔹 Adapter RecyclerView
-            val adapter = ShopAdapter(shopItems) { item ->
-                purchaseItem(item)
-            }
+            val adapter = ShopAdapter(shopItems) { item -> purchaseItem(item) }
             binding.rvShop.layoutManager = LinearLayoutManager(this)
             binding.rvShop.adapter = adapter
 
             // 🔹 Bouton retour
             binding.btnBack.setOnClickListener { finish() }
 
-            // 🔹 Initialisation AdMob
-            MobileAds.initialize(this) { Log.d("ShopActivity", "AdMob initialized") }
-
-            // 🔹 Charger la bannière
+            // 🔹 Initialisation AdMob banner
+            MobileAds.initialize(this) { Log.d(TAG, "AdMob initialized") }
             val adRequest = AdRequest.Builder().build()
             binding.adView.loadAd(adRequest)
-
-            // 🔹 Listener pour debug
             binding.adView.adListener = object : AdListener() {
-                override fun onAdLoaded() {
-                    Log.d("ShopActivity", "Ad loaded")
-                }
-
+                override fun onAdLoaded() { Log.d(TAG, "Banner loaded") }
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.e("ShopActivity", "Ad failed: ${adError.message}")
+                    Log.e(TAG, "Banner failed: ${adError.message}")
                 }
             }
 
+            // 🔹 Rewarded Ad à l’ouverture
+            AdHelper.loadRewardedAd(this)
+            binding.root.postDelayed({
+                AdHelper.showRewardedAd(this) { reward ->
+                    Toast.makeText(this, "Vous avez gagné ${reward.amount} ${reward.type}!", Toast.LENGTH_SHORT).show()
+                }
+            }, 500)
+
+            // 🔹 Rewarded Ad toutes les 5 minutes
+            rewardRunnable = object : Runnable {
+                override fun run() {
+                    AdHelper.showRewardedAd(this@ShopActivity) { reward ->
+                        Toast.makeText(this@ShopActivity, "Vous avez gagné ${reward.amount} ${reward.type}!", Toast.LENGTH_SHORT).show()
+                    }
+                    handler.postDelayed(this, 5 * 60 * 1000) // toutes les 5 minutes
+                }
+            }
+            handler.postDelayed(rewardRunnable, 5 * 60 * 1000)
+
         } catch (e: Exception) {
-            Log.e("ShopActivity", "Exception dans onCreate", e)
-            Toast.makeText(
-                this,
-                "⚠️ ShopActivity crash\nType: ${e::class.simpleName}\nMessage: ${e.message}",
-                Toast.LENGTH_LONG
-            ).show()
+            Log.e(TAG, "Exception dans onCreate", e)
+            Toast.makeText(this, "⚠️ ShopActivity crash\nType: ${e::class.simpleName}\nMessage: ${e.message}", Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun updateBalance() {
+        val coins = GamePreferences.getTotalCoins()
+        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
+        binding.tvBalance.text = "Solde: $localAmount"
+        binding.tvCoinsCount.text = "🪙 $coins"
     }
 
     private fun purchaseItem(item: ShopItem) {
@@ -93,6 +109,12 @@ class ShopActivity : AppCompatActivity() {
         }
 
         Toast.makeText(this, "${item.name} acheté!", Toast.LENGTH_SHORT).show()
-        recreate() // Recharge l'Activity pour mettre à jour le solde et l'état
+        updateBalance()
+        binding.rvShop.adapter?.notifyDataSetChanged()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        handler.removeCallbacks(rewardRunnable)
     }
 }
