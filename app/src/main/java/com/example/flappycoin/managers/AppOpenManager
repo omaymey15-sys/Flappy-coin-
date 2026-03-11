@@ -40,4 +40,3 @@ object AppOpenManager {
         appOpenAd?.show(activity)
         appOpenAd = null
     }
-}
