@@ -5,23 +5,30 @@
     android:orientation="vertical"
     android:padding="12dp"
     android:layout_marginBottom="8dp"
-    android:background="@drawable/card_background">
+    android:background="#2a2a3e">
 
+    <!-- Nom de l’item -->
     <TextView
         android:id="@+id/tvName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Item Name"
         android:textSize="18sp"
         android:textColor="#FFD700"
         android:textStyle="bold" />
 
+    <!-- Description -->
     <TextView
         android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Description"
         android:textSize="12sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="#D3D3D3"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp" />
 
+    <!-- Prix et bouton -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,18 +37,21 @@
 
         <TextView
             android:id="@+id/tvPrice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="🪙 500"
             android:textSize="14sp"
             android:textColor="#FFD700"
-            android:textStyle="bold"
-            android:layout_weight="1" />
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnBuy"
-            android:text="Acheter"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
-            android:background="@drawable/button_background"
+            android:text="Acheter"
+            android:background="#4169E1"
+            android:textColor="#FFFFFF"
             android:textSize="12sp" />
 
     </LinearLayout>
