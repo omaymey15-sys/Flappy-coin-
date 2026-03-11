@@ -1,8 +1,10 @@
 package com.example.flappycoin.activities
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityLeaderboardBinding
+import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.GamePreferences
 
 class LeaderboardActivity : AppCompatActivity() {
@@ -13,12 +15,19 @@ class LeaderboardActivity : AppCompatActivity() {
         binding = ActivityLeaderboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 🔹 Initialisation banner
+        AdManager.init(this)
+        AdManager.loadBanner(binding.adView)
+
+        // 🔹 Interstitial à l'ouverture
+        AdManager.showInterstitial(this)
+
         val bestScore = GamePreferences.getBestScore()
         val bestCoins = GamePreferences.getBestCoins()
-        val username = GamePreferences.getUsername()
+        val username = GamePreferences.getUsername() ?: "Guest"
 
         binding.tvLeaderboard.text = """
-            🏆 TOP SCORES (LOCAL)
+            🏆 TOP SCORES (Local)
             
             👤 $username
             Score: $bestScore
