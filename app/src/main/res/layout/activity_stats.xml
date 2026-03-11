@@ -24,17 +24,20 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Parties jouées -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/card_background"
+                android:background="#2a2a3e"
                 android:padding="12dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
                     android:text="Parties jouées"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
                 <TextView
@@ -46,17 +49,20 @@
 
             </LinearLayout>
 
+            <!-- Meilleur score -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/card_background"
+                android:background="#2a2a3e"
                 android:padding="12dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
                     android:text="Meilleur score"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
                 <TextView
@@ -68,17 +74,20 @@
 
             </LinearLayout>
 
+            <!-- Meilleure collecte -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/card_background"
+                android:background="#2a2a3e"
                 android:padding="12dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
                     android:text="Meilleure collecte"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
                 <TextView
@@ -90,17 +99,20 @@
 
             </LinearLayout>
 
+            <!-- Distance totale -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/card_background"
+                android:background="#2a2a3e"
                 android:padding="12dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
                     android:text="Distance totale"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
                 <TextView
@@ -112,17 +124,20 @@
 
             </LinearLayout>
 
+            <!-- Temps total -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/card_background"
+                android:background="#2a2a3e"
                 android:padding="12dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
                     android:text="Temps total"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
                 <TextView
@@ -134,17 +149,20 @@
 
             </LinearLayout>
 
+            <!-- Score moyen -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:background="@drawable/card_background"
+                android:background="#2a2a3e"
                 android:padding="12dp"
                 android:layout_marginBottom="8dp">
 
                 <TextView
                     android:text="Score moyen"
-                    android:textColor="@android:color/white"
+                    android:textColor="#FFFFFF"
                     android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
                 <TextView
@@ -160,19 +178,14 @@
 
     </ScrollView>
 
+    <!-- Bouton Retour -->
     <Button
         android:id="@+id/btnBack"
         android:text="← Retour"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
-        android:background="@drawable/button_background" />
-
-    <com.google.android.gms.ads.AdView
-        android:id="@+id/adView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginTop="8dp" />
+        android:background="#4169E1"
+        android:textColor="#FFFFFF" />
 
 </LinearLayout>
