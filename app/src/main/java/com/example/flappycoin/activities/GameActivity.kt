@@ -11,7 +11,7 @@ import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.ui.GameView
 import com.example.flappycoin.utils.NetworkManager
-
+import com.example.flappycoin.utils.Constants
 class GameActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
