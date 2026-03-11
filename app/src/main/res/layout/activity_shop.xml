@@ -7,7 +7,7 @@
     android:padding="16dp"
     android:background="#1a1a1a">
 
-    <!-- En-tête: Boutique + solde -->
+    <!-- En-tête: Boutique + solde + coins -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -24,18 +24,34 @@
             android:textColor="#FFD700"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvBalance"
+        <!-- Solde et coins -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Solde: $0.00"
-            android:textColor="#FFD700"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Solde: $0.00"
+                android:textColor="#FFD700"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCoinsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🪙 0"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:layout_marginTop="2dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Liste des items -->
+    <!-- Liste des items du shop -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvShop"
         android:layout_width="match_parent"
@@ -43,7 +59,7 @@
         android:layout_weight="1"
         android:layout_marginBottom="16dp" />
 
-    <!-- Bouton Retour -->
+    <!-- Bouton retour -->
     <Button
         android:id="@+id/btnBack"
         android:text="← Retour"
