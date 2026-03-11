@@ -20,23 +20,19 @@ class MyApplication : Application() {
         try {
             Log.d(TAG, "🚀 Application démarrage...")
 
-            // 🔹 Initialisation des préférences du jeu
             GamePreferences.init(this)
             Log.d(TAG, "✅ GamePreferences initialisé")
 
-            // 🔹 Gestion globale des crashs
             CrashHandler.setupGlobalCrashHandler(this)
             Log.d(TAG, "✅ CrashHandler initialisé")
 
-            // 🔹 Initialisation du son
             SoundManager.init(this)
             Log.d(TAG, "✅ SoundManager initialisé")
 
-            // 🔹 Gestion des monnaies / coins
+            // ✅ CORRECTION ICI
             CurrencyManager.init(GamePreferences)
             Log.d(TAG, "✅ CurrencyManager initialisé")
 
-            // 🔹 Gestion de la langue
             LanguageManager.init(this)
             Log.d(TAG, "✅ LanguageManager initialisé")
 
