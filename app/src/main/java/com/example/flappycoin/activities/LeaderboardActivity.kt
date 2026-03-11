@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityLeaderboardBinding
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.GamePreferences
-import com.example.flappycoin.utils.Constants
+
 class LeaderboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLeaderboardBinding
 
@@ -15,13 +15,16 @@ class LeaderboardActivity : AppCompatActivity() {
         binding = ActivityLeaderboardBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 🔹 Initialisation banner
-        AdManager.init(this)
+        // 🔹 Initialisation AdManager avec applicationContext
+        AdManager.init(applicationContext)
+
+        // 🔹 Banner
         AdManager.loadBanner(binding.adView)
 
-        // 🔹 Interstitial à l'ouverture
+        // 🔹 Interstitial
         AdManager.showInterstitial(this)
 
+        // ================= STATS =================
         val bestScore = GamePreferences.getBestScore()
         val bestCoins = GamePreferences.getBestCoins()
         val username = GamePreferences.getUsername() ?: "Guest"
