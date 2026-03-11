@@ -1,0 +1,86 @@
+package com.example.flappycoin.managers
+
+import android.app.Activity
+import android.app.Application
+import android.os.Bundle
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.appopen.AppOpenAd
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.appopen.AppOpenAd.AppOpenAdLoadCallback
+import android.util.Log
+
+class AppOpenManager(private val application: Application) : Application.ActivityLifecycleCallbacks {
+
+    private var appOpenAd: AppOpenAd? = null
+    private var isShowingAd = false
+    private var currentActivity: Activity? = null
+
+    init {
+        application.registerActivityLifecycleCallbacks(this)
+    }
+
+    // 🔹 Charger la pub
+    fun loadAd() {
+        if (appOpenAd != null) return // Déjà chargé
+
+        val request = AdRequest.Builder().build()
+        AppOpenAd.load(
+            application,
+            "ca-app-pub-3940256099942544/3419835294", // ID test
+            request,
+            AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT,
+            object : AppOpenAdLoadCallback() {
+                override fun onAdLoaded(ad: AppOpenAd) {
+                    Log.d("AppOpenManager", "App Open Ad chargée")
+                    appOpenAd = ad
+                }
+
+                override fun onAdFailedToLoad(error: LoadAdError) {
+                    Log.e("AppOpenManager", "Échec chargement App Open: ${error.message}")
+                    appOpenAd = null
+                }
+            }
+        )
+    }
+
+    // 🔹 Afficher la pub si possible
+    fun showAdIfAvailable() {
+        if (isShowingAd || appOpenAd == null) return
+
+        appOpenAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                Log.d("AppOpenManager", "App Open Ad fermée")
+                appOpenAd = null
+                isShowingAd = false
+                loadAd() // Recharger la pub
+            }
+
+            override fun onAdFailedToShowFullScreenContent(error: com.google.android.gms.ads.AdError) {
+                Log.e("AppOpenManager", "Erreur affichage App Open: ${error.message}")
+                appOpenAd = null
+                isShowingAd = false
+            }
+
+            override fun onAdShowedFullScreenContent() {
+                isShowingAd = true
+                Log.d("AppOpenManager", "App Open Ad affichée")
+            }
+        }
+
+        appOpenAd?.show(currentActivity!!)
+    }
+
+    /** Activity Lifecycle **/
+    override fun onActivityResumed(activity: Activity) {
+        currentActivity = activity
+        showAdIfAvailable() // Affiche la pub dès que l'utilisateur revient dans l'app
+    }
+
+    override fun onActivityPaused(activity: Activity) {}
+    override fun onActivityStarted(activity: Activity) {}
+    override fun onActivityDestroyed(activity: Activity) {}
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+    override fun onActivityStopped(activity: Activity) {}
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+}
