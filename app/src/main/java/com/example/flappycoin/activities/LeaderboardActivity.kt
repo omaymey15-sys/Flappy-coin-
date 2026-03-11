@@ -1,48 +1,37 @@
 package com.example.flappycoin.activities
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityLeaderboardBinding
-import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.GamePreferences
 
 class LeaderboardActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityLeaderboardBinding
+private lateinit var binding: ActivityLeaderboardBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityLeaderboardBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+override fun onCreate(savedInstanceState: Bundle?) {  
+    super.onCreate(savedInstanceState)  
+    binding = ActivityLeaderboardBinding.inflate(layoutInflater)  
+    setContentView(binding.root)  
 
-        // 🔹 Initialisation AdManager avec applicationContext
-        AdManager.init(applicationContext)
+    val bestScore = GamePreferences.getBestScore()  
+    val bestCoins = GamePreferences.getBestCoins()  
+    val username = GamePreferences.getUsername()  
 
-        // 🔹 Banner
-        AdManager.loadBanner(binding.adView)
+    binding.tvLeaderboard.text = """  
+        🏆 TOP SCORES (LOCAL)  
+          
+        👤 $username  
+        Score: $bestScore  
+        Pièces: $bestCoins  
+          
+        (Sauvegarde locale)  
+          
+        💡 Conseil: Partagez votre score!  
+    """.trimIndent()  
 
-        // 🔹 Interstitial
-        AdManager.showInterstitial(this)
+    binding.btnBack.setOnClickListener {  
+        finish()  
+    }  
+}
 
-        // ================= STATS =================
-        val bestScore = GamePreferences.getBestScore()
-        val bestCoins = GamePreferences.getBestCoins()
-        val username = GamePreferences.getUsername() ?: "Guest"
-
-        binding.tvLeaderboard.text = """
-            🏆 TOP SCORES (Local)
-            
-            👤 $username
-            Score: $bestScore
-            Pièces: $bestCoins
-            
-            (Sauvegarde locale)
-            
-            💡 Conseil: Partagez votre score!
-        """.trimIndent()
-
-        binding.btnBack.setOnClickListener {
-            finish()
-        }
-    }
 }
