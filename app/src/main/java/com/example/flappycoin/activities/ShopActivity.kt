@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flappycoin.databinding.ActivityShopBinding
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
+import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.models.ShopItem
 import com.example.flappycoin.ui.ShopAdapter
 
@@ -18,11 +19,12 @@ class ShopActivity : AppCompatActivity() {
         binding = ActivityShopBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Mise à jour solde
+        // ================= SOLDE =================
         val coins = GamePreferences.getTotalCoins()
         val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
         binding.tvBalance.text = "Solde: $localAmount"
 
+        // ================= SHOP ITEMS =================
         val shopItems = listOf(
             ShopItem("Red Bird", "L'oiseau original", 0, true),
             ShopItem("Blue Bird", "Oiseau bleu mystérieux", 500, false),
@@ -39,9 +41,22 @@ class ShopActivity : AppCompatActivity() {
         binding.rvShop.layoutManager = LinearLayoutManager(this)
         binding.rvShop.adapter = adapter
 
-        binding.btnBack.setOnClickListener {
-            finish()
+        // ================= BOUTON RETOUR =================
+        binding.btnBack.setOnClickListener { finish() }
+
+        // ================= PUBS =================
+        // Banner en bas de la boutique
+        AdManager.loadBanner(binding.adView)
+
+        // Rewarded ad dès l’ouverture de la boutique
+        AdManager.showRewardedAd(this) { reward ->
+            Toast.makeText(this, "Vous avez gagné $reward coins!", Toast.LENGTH_SHORT).show()
+            GamePreferences.addCoins(reward)
+            binding.tvBalance.text = "Solde: ${CurrencyManager.coinsToLocalCurrency(GamePreferences.getTotalCoins())}"
         }
+
+        // Interstitial à l’ouverture de la boutique
+        AdManager.showInterstitial(this)
     }
 
     private fun purchaseItem(item: ShopItem) {
