@@ -1,48 +1,39 @@
 package com.example.flappycoin.managers
 
-import android.app.Activity
 import android.app.Application
 import android.util.Log
-import com.google.android.gms.ads.AdRequest
+import com.example.flappycoin.utils.Constants
 import com.google.android.gms.ads.appopen.AppOpenAd
-import com.example.flappycoin.utils.Constants  // ← Important !
+import com.google.android.gms.ads.AdRequest
 
 class AppOpenManager(private val application: Application) {
 
-    companion object {
-        private const val TAG = "AppOpenManager"
-    }
-
     private var appOpenAd: AppOpenAd? = null
-    private var isLoading = false
+    private val TAG = "AppOpenManager"
 
     fun loadAd() {
-        if (isLoading || appOpenAd != null) return
-        isLoading = true
-
+        val request = AdRequest.Builder().build()
         AppOpenAd.load(
             application,
-            Constants.ADMOB_APP_ID, // ou Constants.APP_OPEN_AD_UNIT_ID si tu le rajoutes
-            AdRequest.Builder().build(),
+            Constants.REWARDED_AD_UNIT_ID, // À remplacer si tu as un APP_OPEN_AD_UNIT_ID
+            request,
             AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT,
             object : AppOpenAd.AppOpenAdLoadCallback() {
                 override fun onAdLoaded(ad: AppOpenAd) {
+                    Log.d(TAG, "✅ AppOpenAd loaded")
                     appOpenAd = ad
-                    isLoading = false
-                    Log.d(TAG, "AppOpen chargée")
                 }
 
-                override fun onAdFailedToLoad(loadAdError: com.google.android.gms.ads.LoadAdError) {
-                    Log.e(TAG, "Échec AppOpen: ${loadAdError.message}")
-                    isLoading = false
+                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
+                    Log.e(TAG, "❌ AppOpenAd failed to load: ${loadAdError.message}")
+                    appOpenAd = null
                 }
             }
         )
     }
 
-    fun showAd(activity: Activity) {
-        appOpenAd?.show(activity)
+    fun showAdIfAvailable() {
+        appOpenAd?.show(application as? androidx.appcompat.app.AppCompatActivity ?: return)
         appOpenAd = null
-        loadAd()
     }
 }
