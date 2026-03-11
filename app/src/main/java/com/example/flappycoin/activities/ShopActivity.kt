@@ -10,7 +10,7 @@ import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.models.ShopItem
 import com.example.flappycoin.ui.ShopAdapter
-import com.example.flappycoin.utils.Constants
+
 class ShopActivity : AppCompatActivity() {
     private lateinit var binding: ActivityShopBinding
 
@@ -20,9 +20,7 @@ class ShopActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // ================= SOLDE =================
-        val coins = GamePreferences.getTotalCoins()
-        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
-        binding.tvBalance.text = "Solde: $localAmount"
+        updateBalance()
 
         // ================= SHOP ITEMS =================
         val shopItems = listOf(
@@ -34,10 +32,7 @@ class ShopActivity : AppCompatActivity() {
             ShopItem("Coins Pack 100", "100 coins bonus", 50, false)
         )
 
-        val adapter = ShopAdapter(shopItems) { item ->
-            purchaseItem(item)
-        }
-
+        val adapter = ShopAdapter(shopItems) { item -> purchaseItem(item) }
         binding.rvShop.layoutManager = LinearLayoutManager(this)
         binding.rvShop.adapter = adapter
 
@@ -45,18 +40,26 @@ class ShopActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener { finish() }
 
         // ================= PUBS =================
-        // Banner en bas de la boutique
+        // Banner en bas
         AdManager.loadBanner(binding.adView)
 
-        // Rewarded ad dès l’ouverture de la boutique
-        AdManager.showRewardedAd(this) { reward ->
-            Toast.makeText(this, "Vous avez gagné $reward coins!", Toast.LENGTH_SHORT).show()
-            GamePreferences.addCoins(reward)
-            binding.tvBalance.text = "Solde: ${CurrencyManager.coinsToLocalCurrency(GamePreferences.getTotalCoins())}"
-        }
+        // Interstitial : charger et montrer si dispo
+        AdManager.loadInterstitial(this)
+        // Tu peux décider de l'afficher plus tard, par exemple après 5s ou un événement utilisateur
 
-        // Interstitial à l’ouverture de la boutique
-        AdManager.showInterstitial(this)
+        // Rewarded : charger d'abord
+        AdManager.loadRewardedAd(this)
+        binding.btnRewardAd.setOnClickListener {
+            if (AdManager.isRewardedAdLoaded()) {
+                AdManager.showRewardedAd(this) { reward ->
+                    Toast.makeText(this, "Vous avez gagné ${reward.amount} coins!", Toast.LENGTH_SHORT).show()
+                    GamePreferences.addCoins(reward.amount)
+                    updateBalance()
+                }
+            } else {
+                Toast.makeText(this, "La pub n'est pas encore prête.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun purchaseItem(item: ShopItem) {
@@ -72,6 +75,12 @@ class ShopActivity : AppCompatActivity() {
         }
 
         Toast.makeText(this, "${item.name} acheté!", Toast.LENGTH_SHORT).show()
-        recreate()
+        updateBalance()
+    }
+
+    private fun updateBalance() {
+        val coins = GamePreferences.getTotalCoins()
+        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
+        binding.tvBalance.text = "Solde: $localAmount"
     }
 }
