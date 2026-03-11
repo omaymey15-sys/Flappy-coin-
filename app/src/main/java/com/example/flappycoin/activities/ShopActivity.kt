@@ -7,80 +7,57 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.flappycoin.databinding.ActivityShopBinding
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
-import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.models.ShopItem
 import com.example.flappycoin.ui.ShopAdapter
 
 class ShopActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityShopBinding
+private lateinit var binding: ActivityShopBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityShopBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+override fun onCreate(savedInstanceState: Bundle?) {  
+    super.onCreate(savedInstanceState)  
+    binding = ActivityShopBinding.inflate(layoutInflater)  
+    setContentView(binding.root)  
 
-        // ================= SOLDE =================
-        updateBalance()
+    // Mise à jour solde  
+    val coins = GamePreferences.getTotalCoins()  
+    val localAmount = CurrencyManager.coinsToLocalCurrency(coins)  
+    binding.tvBalance.text = "Solde: $localAmount"  
 
-        // ================= SHOP ITEMS =================
-        val shopItems = listOf(
-            ShopItem("Red Bird", "L'oiseau original", 0, true),
-            ShopItem("Blue Bird", "Oiseau bleu mystérieux", 500, false),
-            ShopItem("Golden Bird", "Oiseau en or massif", 1500, false),
-            ShopItem("2x Multiplier", "Double les coins", 2000, false),
-            ShopItem("Shield", "Protection 1 collision", 1000, false),
-            ShopItem("Coins Pack 100", "100 coins bonus", 50, false)
-        )
+    val shopItems = listOf(  
+        ShopItem("Red Bird", "L'oiseau original", 0, true),  
+        ShopItem("Blue Bird", "Oiseau bleu mystérieux", 500, false),  
+        ShopItem("Golden Bird", "Oiseau en or massif", 1500, false),  
+        ShopItem("2x Multiplier", "Double les coins", 2000, false),  
+        ShopItem("Shield", "Protection 1 collision", 1000, false),  
+        ShopItem("Coins Pack 100", "100 coins bonus", 50, false)  
+    )  
 
-        val adapter = ShopAdapter(shopItems) { item -> purchaseItem(item) }
-        binding.rvShop.layoutManager = LinearLayoutManager(this)
-        binding.rvShop.adapter = adapter
+    val adapter = ShopAdapter(shopItems) { item ->  
+        purchaseItem(item)  
+    }  
 
-        // ================= BOUTON RETOUR =================
-        binding.btnBack.setOnClickListener { finish() }
+    binding.rvShop.layoutManager = LinearLayoutManager(this)  
+    binding.rvShop.adapter = adapter  
 
-        // ================= PUBS =================
-        // Banner en bas
-        AdManager.loadBanner(binding.adView)
+    binding.btnBack.setOnClickListener {  
+        finish()  
+    }  
+}  
 
-        // Interstitial : charger et montrer si dispo
-        AdManager.loadInterstitial(this)
-        // Tu peux décider de l'afficher plus tard, par exemple après 5s ou un événement utilisateur
+private fun purchaseItem(item: ShopItem) {  
+    val coins = GamePreferences.getTotalCoins()  
+    if (coins < item.price) {  
+        Toast.makeText(this, "Pas assez de pièces!", Toast.LENGTH_SHORT).show()  
+        return  
+    }  
 
-        // Rewarded : charger d'abord
-        AdManager.loadRewardedAd(this)
-        binding.btnRewardAd.setOnClickListener {
-            if (AdManager.isRewardedAdLoaded()) {
-                AdManager.showRewardedAd(this) { reward ->
-                    Toast.makeText(this, "Vous avez gagné ${reward.amount} coins!", Toast.LENGTH_SHORT).show()
-                    GamePreferences.addCoins(reward.amount)
-                    updateBalance()
-                }
-            } else {
-                Toast.makeText(this, "La pub n'est pas encore prête.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
+    GamePreferences.apply {  
+        removeCoins(item.price)  
+        addPurchasedItem(item.name)  
+    }  
 
-    private fun purchaseItem(item: ShopItem) {
-        val coins = GamePreferences.getTotalCoins()
-        if (coins < item.price) {
-            Toast.makeText(this, "Pas assez de pièces!", Toast.LENGTH_SHORT).show()
-            return
-        }
+    Toast.makeText(this, "${item.name} acheté!", Toast.LENGTH_SHORT).show()  
+    recreate()  
+}
 
-        GamePreferences.apply {
-            removeCoins(item.price)
-            addPurchasedItem(item.name)
-        }
-
-        Toast.makeText(this, "${item.name} acheté!", Toast.LENGTH_SHORT).show()
-        updateBalance()
-    }
-
-    private fun updateBalance() {
-        val coins = GamePreferences.getTotalCoins()
-        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
-        binding.tvBalance.text = "Solde: $localAmount"
-    }
 }
