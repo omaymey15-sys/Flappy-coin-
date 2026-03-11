@@ -1,6 +1,7 @@
 package com.example.flappycoin.activities
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,55 +10,87 @@ import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.models.ShopItem
 import com.example.flappycoin.ui.ShopAdapter
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 
 class ShopActivity : AppCompatActivity() {
-private lateinit var binding: ActivityShopBinding
 
-override fun onCreate(savedInstanceState: Bundle?) {  
-    super.onCreate(savedInstanceState)  
-    binding = ActivityShopBinding.inflate(layoutInflater)  
-    setContentView(binding.root)  
+    private lateinit var binding: ActivityShopBinding
+    private lateinit var shopItems: MutableList<ShopItem>
+    private lateinit var adapter: ShopAdapter
 
-    // Mise à jour solde  
-    val coins = GamePreferences.getTotalCoins()  
-    val localAmount = CurrencyManager.coinsToLocalCurrency(coins)  
-    binding.tvBalance.text = "Solde: $localAmount"  
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityShopBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    val shopItems = listOf(  
-        ShopItem("Red Bird", "L'oiseau original", 0, true),  
-        ShopItem("Blue Bird", "Oiseau bleu mystérieux", 500, false),  
-        ShopItem("Golden Bird", "Oiseau en or massif", 1500, false),  
-        ShopItem("2x Multiplier", "Double les coins", 2000, false),  
-        ShopItem("Shield", "Protection 1 collision", 1000, false),  
-        ShopItem("Coins Pack 100", "100 coins bonus", 50, false)  
-    )  
+        // 🔹 Initialisation AdMob
+        MobileAds.initialize(this) { Log.d("ShopActivity", "AdMob initialized") }
+        val adRequest = AdRequest.Builder().build()
+        binding.adView.loadAd(adRequest)
+        binding.adView.adListener = object : AdListener() {
+            override fun onAdLoaded() { Log.d("ShopActivity", "Ad loaded") }
+            override fun onAdFailedToLoad(error: LoadAdError) {
+                Log.e("ShopActivity", "Ad failed: $error")
+            }
+        }
 
-    val adapter = ShopAdapter(shopItems) { item ->  
-        purchaseItem(item)  
-    }  
+        // 🔹 Mise à jour solde
+        updateBalance()
 
-    binding.rvShop.layoutManager = LinearLayoutManager(this)  
-    binding.rvShop.adapter = adapter  
+        // 🔹 Liste des items du shop
+        shopItems = mutableListOf(
+            ShopItem("Red Bird", "L'oiseau original", 0, true),
+            ShopItem("Blue Bird", "Oiseau bleu mystérieux", 500, GamePreferences.isItemPurchased("Blue Bird")),
+            ShopItem("Golden Bird", "Oiseau en or massif", 1500, GamePreferences.isItemPurchased("Golden Bird")),
+            ShopItem("2x Multiplier", "Double les coins", 2000, GamePreferences.isItemPurchased("2x Multiplier")),
+            ShopItem("Shield", "Protection 1 collision", 1000, GamePreferences.isItemPurchased("Shield")),
+            ShopItem("Coins Pack 100", "100 coins bonus", 50, GamePreferences.isItemPurchased("Coins Pack 100"))
+        )
 
-    binding.btnBack.setOnClickListener {  
-        finish()  
-    }  
-}  
+        // 🔹 Adapter RecyclerView
+        adapter = ShopAdapter(shopItems) { item, position ->
+            purchaseItem(item, position)
+        }
+        binding.rvShop.layoutManager = LinearLayoutManager(this)
+        binding.rvShop.adapter = adapter
 
-private fun purchaseItem(item: ShopItem) {  
-    val coins = GamePreferences.getTotalCoins()  
-    if (coins < item.price) {  
-        Toast.makeText(this, "Pas assez de pièces!", Toast.LENGTH_SHORT).show()  
-        return  
-    }  
+        // 🔹 Bouton retour
+        binding.btnBack.setOnClickListener { finish() }
+    }
 
-    GamePreferences.apply {  
-        removeCoins(item.price)  
-        addPurchasedItem(item.name)  
-    }  
+    // 🔹 Met à jour le solde affiché
+    private fun updateBalance() {
+        val coins = GamePreferences.getTotalCoins()
+        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
+        binding.tvBalance.text = "Solde: $localAmount"
+    }
 
-    Toast.makeText(this, "${item.name} acheté!", Toast.LENGTH_SHORT).show()  
-    recreate()  
-}
+    // 🔹 Acheter un item
+    private fun purchaseItem(item: ShopItem, position: Int) {
+        val coins = GamePreferences.getTotalCoins()
+        if (item.isPurchased) {
+            Toast.makeText(this, "${item.name} déjà acheté!", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (coins < item.price) {
+            Toast.makeText(this, "Pas assez de pièces!", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        // 🔹 Déduire les coins et enregistrer l'achat
+        GamePreferences.apply {
+            removeCoins(item.price)
+            addPurchasedItem(item.name)
+        }
+
+        // 🔹 Mettre à jour l'item et le solde dynamiquement
+        shopItems[position].isPurchased = true
+        adapter.notifyItemChanged(position)
+        updateBalance()
+
+        Toast.makeText(this, "${item.name} acheté!", Toast.LENGTH_SHORT).show()
+    }
 }
