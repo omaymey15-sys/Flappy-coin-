@@ -11,7 +11,7 @@ import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.ui.GameView
 import com.example.flappycoin.utils.NetworkManager
-import com.example.flappycoin.utils.Constants
+
 class GameActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
@@ -30,7 +30,7 @@ class GameActivity : AppCompatActivity() {
         rootLayout.addView(gameView)
 
         // 🔹 Ajouter Banner AdView
-        val bannerView = AdManager.createBanner(this)
+        val bannerView = AdManager.createBanner(applicationContext)
         val bannerParams = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             FrameLayout.LayoutParams.WRAP_CONTENT
@@ -41,8 +41,8 @@ class GameActivity : AppCompatActivity() {
         setContentView(rootLayout)
 
         // 🔹 Charger Rewarded + Interstitial
-        AdManager.loadRewardedAd(this)
-        AdManager.loadInterstitial(this)
+        AdManager.loadRewardedAd(applicationContext)
+        AdManager.loadInterstitial(applicationContext)
     }
 
     private fun showGameOver(score: Int, coins: Int, distance: Int, time: Long) {
