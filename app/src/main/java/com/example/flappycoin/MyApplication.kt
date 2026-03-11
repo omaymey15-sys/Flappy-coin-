@@ -8,7 +8,8 @@ import com.example.flappycoin.managers.SoundManager
 import com.example.flappycoin.utils.CrashHandler
 import com.example.flappycoin.utils.LanguageManager
 import com.google.android.gms.ads.MobileAds
-
+import com.example.flappycoin.managers.AppOpenManager
+import com.example.flappycoin.utils.Constants
 class MyApplication : Application() {
 
     companion object {
