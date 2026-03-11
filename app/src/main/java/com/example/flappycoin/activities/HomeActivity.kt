@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.databinding.ActivityHomeBinding
+import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.SoundManager
@@ -21,6 +22,22 @@ class HomeActivity : AppCompatActivity() {
             Log.d("HomeActivity", "onCreate started")
             binding = ActivityHomeBinding.inflate(layoutInflater)
             setContentView(binding.root)
+
+            // ================= PUBS =================
+            // Banner en bas du menu
+            AdManager.loadBanner(binding.adView)
+
+            // Interstitial à l'ouverture du menu
+            AdManager.showInterstitial(this)
+
+            // Rewarded toutes les 5 minutes (check automatique)
+            if (AdManager.canShowRewardedAd()) {
+                AdManager.showRewardedAd(this) { reward ->
+                    Toast.makeText(this, "Vous avez gagné $reward coins!", Toast.LENGTH_SHORT).show()
+                    GamePreferences.addCoins(reward)
+                    updateUI()
+                }
+            }
 
             updateUI()
             setupListeners()
@@ -75,7 +92,7 @@ class HomeActivity : AppCompatActivity() {
     private fun updateUI() {
         try {
             Log.d("HomeActivity", "updateUI started")
-            
+
             val coins = GamePreferences.getTotalCoins()
             val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
             val username = GamePreferences.getUsername() ?: "Guest"
@@ -85,7 +102,7 @@ class HomeActivity : AppCompatActivity() {
             binding.tvBalance.text = "Solde: $localAmount"
             binding.tvCoinsCount.text = "🪙 $coins"
             binding.tvBestScore.text = "Best: $bestScore"
-            
+
             Log.d("HomeActivity", "✅ updateUI completed")
         } catch (e: Exception) {
             Log.e("HomeActivity", "updateUI failed", e)
