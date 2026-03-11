@@ -1,40 +1,61 @@
 package com.example.flappycoin.managers
 
-import android.app.Application
+import android.app.Activity
 import android.util.Log
+import android.widget.FrameLayout
 import com.example.flappycoin.utils.Constants
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.appopen.AppOpenAd
+import com.google.android.gms.ads.rewarded.RewardItem
+import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 
-class AppOpenManager(private val application: Application) {
+object AdManager {
 
-    private var appOpenAd: AppOpenAd? = null
-    private val TAG = "AppOpenManager"
+    private const val TAG = "AdManager"
 
-    fun loadAd() {
-        val request = AdRequest.Builder().build()
-        AppOpenAd.load(
-            application,
-            Constants.REWARDED_AD_UNIT_ID, // TODO: mettre ton vrai APP_OPEN_AD_UNIT_ID
-            request,
-            AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT,
-            object : AppOpenAd.AppOpenAdLoadCallback() {
-                override fun onAdLoaded(ad: AppOpenAd) {
-                    Log.d(TAG, "✅ AppOpenAd loaded")
-                    appOpenAd = ad
+    private var rewardedAd: RewardedAd? = null
+    private var lastRewardedAdTime: Long = 0
+
+    fun loadBanner(adView: AdView) {
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+        Log.d(TAG, "✅ Banner loaded")
+    }
+
+    fun loadRewardedAd(activity: Activity) {
+        val now = System.currentTimeMillis()
+        if (now - lastRewardedAdTime < Constants.REWARDED_AD_INTERVAL_MS) return
+
+        val adRequest = AdRequest.Builder().build()
+        RewardedAd.load(
+            activity,
+            Constants.REWARDED_AD_UNIT_ID,
+            adRequest,
+            object : RewardedAdLoadCallback() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    Log.e(TAG, "❌ RewardedAd failed to load: ${adError.message}")
+                    rewardedAd = null
                 }
 
-                override fun onAdFailedToLoad(loadAdError: LoadAdError) {
-                    Log.e(TAG, "❌ AppOpenAd failed to load: ${loadAdError.message}")
-                    appOpenAd = null
+                override fun onAdLoaded(ad: RewardedAd) {
+                    Log.d(TAG, "✅ RewardedAd loaded")
+                    rewardedAd = ad
+                    lastRewardedAdTime = System.currentTimeMillis()
                 }
             }
         )
     }
 
-    fun showAdIfAvailable() {
-        appOpenAd?.show(application as? androidx.appcompat.app.AppCompatActivity ?: return)
-        appOpenAd = null
+    fun isRewardedAdLoaded(): Boolean = rewardedAd != null
+
+    fun showRewardedAd(activity: Activity, onReward: (Int) -> Unit) {
+        rewardedAd?.let { ad ->
+            ad.show(activity) { reward: RewardItem ->
+                onReward(reward.amount)
+            }
+            rewardedAd = null
+        } ?: Log.d(TAG, "⚠️ RewardedAd not loaded")
     }
 }
