@@ -7,6 +7,8 @@
     android:background="#1a1a1a">
 
     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="⚙️ PARAMÈTRES"
         android:textSize="28sp"
         android:textColor="#FFD700"
@@ -35,12 +37,12 @@
                 android:layout_marginBottom="8dp">
 
                 <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="🔊 Son"
                     android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
+                    android:textSize="16sp"/>
 
                 <Switch
                     android:id="@+id/swSound"
@@ -59,12 +61,12 @@
                 android:layout_marginBottom="8dp">
 
                 <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:text="📳 Vibrations"
                     android:textColor="#FFFFFF"
-                    android:textSize="16sp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
+                    android:textSize="16sp"/>
 
                 <Switch
                     android:id="@+id/swVibration"
@@ -74,6 +76,8 @@
             </LinearLayout>
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Infos Profil"
                 android:textColor="#FFD700"
                 android:textSize="18sp"
@@ -83,6 +87,8 @@
 
             <TextView
                 android:id="@+id/tvUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Utilisateur: Guest"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
@@ -92,6 +98,8 @@
 
             <TextView
                 android:id="@+id/tvCountry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Pays: France"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
@@ -101,6 +109,8 @@
 
             <TextView
                 android:id="@+id/tvLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Langue: Français"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
@@ -110,6 +120,8 @@
 
             <TextView
                 android:id="@+id/tvCurrency"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:text="Devise: EUR"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
@@ -123,9 +135,9 @@
 
     <Button
         android:id="@+id/btnBack"
-        android:text="← Retour"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:text="← Retour"
         android:background="#4169E1"
         android:textColor="#FFFFFF"/>
 
