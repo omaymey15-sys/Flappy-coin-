@@ -1,192 +1,205 @@
-<?xml version="1.0" encoding="utf-8"?>    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"      xmlns:ads="http://schemas.android.com/apk/res-auto"  android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:orientation="vertical"
-android:padding="16dp"
-android:background="#1a1a1a">
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#1a1a1a">
 
-<!-- Titre -->      <TextView        android:text="📊 STATISTIQUES"
-android:textSize="28sp"
-android:textColor="#FFD700"
-android:textStyle="bold"
-android:layout_marginBottom="24dp"
-android:gravity="center"
-android:layout_width="match_parent"
-android:layout_height="wrap_content" />
+    <!-- Titre -->
+    <TextView
+        android:text="📊 STATISTIQUES"
+        android:textSize="28sp"
+        android:textColor="#FFD700"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
-<!-- ScrollView des stats -->      <ScrollView        android:layout_width="match_parent"
-android:layout_height="0dp"
-android:layout_weight="1">
+    <!-- ScrollView des stats -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-<LinearLayout        
-android:layout_width="match_parent"        
-android:layout_height="wrap_content"        
-android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-<!-- Parties jouées -->        
-<LinearLayout        
-    android:layout_width="match_parent"        
-    android:layout_height="60dp"        
-    android:background="#2a2a3e"        
-    android:padding="12dp"        
-    android:layout_marginBottom="8dp">        
+            <!-- Parties jouées -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#2a2a3e"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp">
 
-    <TextView        
-        android:text="Parties jouées"        
-        android:textColor="#FFFFFF"        
-        android:textSize="14sp"        
-        android:layout_width="0dp"        
-        android:layout_height="wrap_content"        
-        android:layout_weight="1" />        
+                <TextView
+                    android:text="Parties jouées"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-    <TextView        
-        android:id="@+id/tvTotalGames"        
-        android:text="0"        
-        android:textColor="#FFD700"        
-        android:textSize="18sp"        
-        android:textStyle="bold" />        
+                <TextView
+                    android:id="@+id/tvTotalGames"
+                    android:text="0"
+                    android:textColor="#FFD700"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-</LinearLayout>        
+            </LinearLayout>
 
-<!-- Meilleur score -->        
-<LinearLayout        
-    android:layout_width="match_parent"        
-    android:layout_height="60dp"        
-    android:background="#2a2a3e"        
-    android:padding="12dp"        
-    android:layout_marginBottom="8dp">        
+            <!-- Meilleur score -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#2a2a3e"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp">
 
-    <TextView        
-        android:text="Meilleur score"        
-        android:textColor="#FFFFFF"        
-        android:textSize="14sp"        
-        android:layout_width="0dp"        
-        android:layout_height="wrap_content"        
-        android:layout_weight="1" />        
+                <TextView
+                    android:text="Meilleur score"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-    <TextView        
-        android:id="@+id/tvBestScore"        
-        android:text="0"        
-        android:textColor="#FFD700"        
-        android:textSize="18sp"        
-        android:textStyle="bold" />        
+                <TextView
+                    android:id="@+id/tvBestScore"
+                    android:text="0"
+                    android:textColor="#FFD700"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-</LinearLayout>        
+            </LinearLayout>
 
-<!-- Meilleure collecte -->        
-<LinearLayout        
-    android:layout_width="match_parent"        
-    android:layout_height="60dp"        
-    android:background="#2a2a3e"        
-    android:padding="12dp"        
-    android:layout_marginBottom="8dp">        
+            <!-- Meilleure collecte -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#2a2a3e"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp">
 
-    <TextView        
-        android:text="Meilleure collecte"        
-        android:textColor="#FFFFFF"        
-        android:textSize="14sp"        
-        android:layout_width="0dp"        
-        android:layout_height="wrap_content"        
-        android:layout_weight="1" />        
+                <TextView
+                    android:text="Meilleure collecte"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-    <TextView        
-        android:id="@+id/tvBestCoins"        
-        android:text="0"        
-        android:textColor="#FFD700"        
-        android:textSize="18sp"        
-        android:textStyle="bold" />        
+                <TextView
+                    android:id="@+id/tvBestCoins"
+                    android:text="0"
+                    android:textColor="#FFD700"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-</LinearLayout>        
+            </LinearLayout>
 
-<!-- Distance totale -->        
-<LinearLayout        
-    android:layout_width="match_parent"        
-    android:layout_height="60dp"        
-    android:background="#2a2a3e"        
-    android:padding="12dp"        
-    android:layout_marginBottom="8dp">        
+            <!-- Distance totale -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#2a2a3e"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp">
 
-    <TextView        
-        android:text="Distance totale"        
-        android:textColor="#FFFFFF"        
-        android:textSize="14sp"        
-        android:layout_width="0dp"        
-        android:layout_height="wrap_content"        
-        android:layout_weight="1" />        
+                <TextView
+                    android:text="Distance totale"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-    <TextView        
-        android:id="@+id/tvTotalDistance"        
-        android:text="0m"        
-        android:textColor="#FFD700"        
-        android:textSize="18sp"        
-        android:textStyle="bold" />        
+                <TextView
+                    android:id="@+id/tvTotalDistance"
+                    android:text="0m"
+                    android:textColor="#FFD700"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-</LinearLayout>        
+            </LinearLayout>
 
-<!-- Temps total -->        
-<LinearLayout        
-    android:layout_width="match_parent"        
-    android:layout_height="60dp"        
-    android:background="#2a2a3e"        
-    android:padding="12dp"        
-    android:layout_marginBottom="8dp">        
+            <!-- Temps total -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#2a2a3e"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp">
 
-    <TextView        
-        android:text="Temps total"        
-        android:textColor="#FFFFFF"        
-        android:textSize="14sp"        
-        android:layout_width="0dp"        
-        android:layout_height="wrap_content"        
-        android:layout_weight="1" />        
+                <TextView
+                    android:text="Temps total"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-    <TextView        
-        android:id="@+id/tvTotalTime"        
-        android:text="0s"        
-        android:textColor="#FFD700"        
-        android:textSize="18sp"        
-        android:textStyle="bold" />        
+                <TextView
+                    android:id="@+id/tvTotalTime"
+                    android:text="0s"
+                    android:textColor="#FFD700"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
-</LinearLayout>        
+            </LinearLayout>
 
-<!-- Score moyen -->        
-<LinearLayout        
-    android:layout_width="match_parent"        
-    android:layout_height="60dp"        
-    android:background="#2a2a3e"        
-    android:padding="12dp"        
-    android:layout_marginBottom="8dp">        
+            <!-- Score moyen -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="#2a2a3e"
+                android:padding="12dp"
+                android:layout_marginBottom="8dp">
 
-    <TextView        
-        android:text="Score moyen"        
-        android:textColor="#FFFFFF"        
-        android:textSize="14sp"        
-        android:layout_width="0dp"        
-        android:layout_height="wrap_content"        
-        android:layout_weight="1" />        
+                <TextView
+                    android:text="Score moyen"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
-    <TextView        
-        android:id="@+id/tvAverageScore"        
-        android:text="0"        
-        android:textColor="#FFD700"        
-        android:textSize="18sp"        
-        android:textStyle="bold" />        
+                <TextView
+                    android:id="@+id/tvAverageScore"
+                    android:text="0"
+                    android:textColor="#FFD700"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bouton Retour -->
+    <Button
+        android:id="@+id/btnBack"
+        android:text="← Retour"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:background="#4169E1"
+        android:textColor="#FFFFFF" />
+
+    <!-- Bannière AdMob -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|bottom"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 
 </LinearLayout>
-
-</LinearLayout>  </ScrollView>      <!-- Bouton Retour -->      <Button        
-android:id="@+id/btnBack"        
-android:text="← Retour"        
-android:layout_width="match_parent"        
-android:layout_height="50dp"        
-android:layout_marginTop="16dp"        
-android:background="#4169E1"        
-android:textColor="#FFFFFF" />
-
-<!-- Bannière AdMob -->      <com.google.android.gms.ads.AdView  android:id="@+id/adView"
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:layout_gravity="center_horizontal|bottom"
-ads:adSize="BANNER"
-ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
-
-</LinearLayout>  lorsque j clique sur statistiques l'apk crashe
-Analyse ça aussi
