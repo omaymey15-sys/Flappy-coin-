@@ -23,25 +23,14 @@ class HomeActivity : AppCompatActivity() {
             binding = ActivityHomeBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            // ================= PUBS =================
-            // Banner en bas du menu
+            // 🔹 Initialisation pub banner
+            AdManager.init(this)
             AdManager.loadBanner(binding.adView)
-
-            // Interstitial à l'ouverture du menu
-            AdManager.showInterstitial(this)
-
-            // Rewarded toutes les 5 minutes (check automatique)
-            if (AdManager.canShowRewardedAd()) {
-                AdManager.showRewardedAd(this) { reward ->
-                    Toast.makeText(this, "Vous avez gagné $reward coins!", Toast.LENGTH_SHORT).show()
-                    GamePreferences.addCoins(reward)
-                    updateUI()
-                }
-            }
 
             updateUI()
             setupListeners()
             Log.d("HomeActivity", "✅ onCreate completed")
+
         } catch (e: Exception) {
             Log.e("HomeActivity", "onCreate failed", e)
             Toast.makeText(this, "Erreur HomeActivity: ${e.message}", Toast.LENGTH_LONG).show()
@@ -57,26 +46,41 @@ class HomeActivity : AppCompatActivity() {
             }
             SoundManager.playTap()
             startActivity(Intent(this, GameActivity::class.java))
+
+            // Rewarded toutes les 5 minutes après jeu
+            showRewardedIfReady()
         }
 
         binding.btnShop.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, ShopActivity::class.java))
+
+            // Rewarded à l'ouverture de la boutique
+            showRewardedIfReady()
         }
 
         binding.btnStats.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, StatsActivity::class.java))
+
+            // Interstitiel stats
+            AdManager.showInterstitial(this)
         }
 
         binding.btnLeaderboard.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, LeaderboardActivity::class.java))
+
+            // Interstitiel classement
+            AdManager.showInterstitial(this)
         }
 
         binding.btnHelp.setOnClickListener {
             SoundManager.playTap()
             startActivity(Intent(this, HelpActivity::class.java))
+
+            // Interstitiel aide
+            AdManager.showInterstitial(this)
         }
 
         binding.btnSettings.setOnClickListener {
@@ -128,10 +132,23 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    private fun showRewardedIfReady() {
+        if (AdManager.canShowRewardedAd()) {
+            AdManager.showRewardedAd(this) { reward ->
+                Toast.makeText(this, "Vous avez gagné $reward coins!", Toast.LENGTH_SHORT).show()
+                GamePreferences.addCoins(reward)
+                updateUI()
+            }
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         try {
             updateUI()
+
+            // Rewarded toutes les 5 minutes quand on revient au menu
+            showRewardedIfReady()
         } catch (e: Exception) {
             Log.e("HomeActivity", "onResume failed", e)
         }
