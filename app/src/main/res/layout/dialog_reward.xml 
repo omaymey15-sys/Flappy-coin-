@@ -1,0 +1,48 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#2a2a3e"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎁 Cadeau"
+        android:textSize="22sp"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="12dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btnShare"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="🔗"
+            android:textSize="28sp"
+            android:layout_margin="8dp"/>
+
+        <Button
+            android:id="@+id/btnInvite"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="👥"
+            android:textSize="28sp"
+            android:layout_margin="8dp"/>
+
+        <Button
+            android:id="@+id/btnAd"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="🎬"
+            android:textSize="28sp"
+            android:layout_margin="8dp"/>
+    </LinearLayout>
+</LinearLayout>
