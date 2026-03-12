@@ -1,171 +1,192 @@
-<?xml version="1.0" encoding="utf-8"?>  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
-xmlns:ads="http://schemas.android.com/apk/res-auto"  
-android:layout_width="match_parent"  
-android:layout_height="match_parent"  
-android:orientation="vertical"  
-android:background="#1a1a2e">
-
-<!-- Header -->  
-<LinearLayout  
-    android:layout_width="match_parent"  
-    android:layout_height="wrap_content"  
-    android:orientation="horizontal"  
-    android:padding="12dp"  
-    android:background="#2a2a3e"  
-    android:gravity="center_vertical">  
-
-    <TextView  
-        android:id="@+id/tvBalance"  
-        android:layout_width="wrap_content"  
-        android:layout_height="wrap_content"  
-        android:text="Solde: $0.00"  
-        android:textColor="#FFD700"  
-        android:textSize="18sp"  
-        android:textStyle="bold"  
-        android:layout_marginEnd="16dp"/>  
-
-    <TextView  
-        android:id="@+id/tvCoinsCount"  
-        android:layout_width="wrap_content"  
-        android:layout_height="wrap_content"  
-        android:text="🪙 0"  
-        android:textColor="@android:color/white"  
-        android:textSize="18sp"  
-        android:layout_weight="1"/>  
-
-    <Button  
-        android:id="@+id/btnWithdraw"  
-        android:layout_width="wrap_content"  
-        android:layout_height="wrap_content"  
-        android:text="Retirer"  
-        android:background="#4CAF50"  
-        android:textColor="@android:color/white"/>  
-</LinearLayout>  
-
-<!-- Infos utilisateur -->  
-<LinearLayout  
-    android:layout_width="match_parent"  
-    android:layout_height="wrap_content"  
-    android:orientation="horizontal"  
-    android:padding="12dp"  
-    android:background="#2a2a3e"  
-    android:layout_marginTop="10dp"  
-    android:gravity="center_vertical">  
-
-    <TextView  
-        android:id="@+id/tvUsername"  
-        android:layout_width="0dp"  
-        android:layout_height="wrap_content"  
-        android:layout_weight="1"  
-        android:text="Guest"  
-        android:textColor="#FFD700"  
-        android:textSize="20sp"  
-        android:textStyle="bold"/>  
-
-    <TextView  
-        android:id="@+id/tvBestScore"  
-        android:layout_width="wrap_content"  
-        android:layout_height="wrap_content"  
-        android:text="Best: 0"  
-        android:textColor="@android:color/white"  
-        android:textSize="16sp"/>  
-</LinearLayout>  
-
-<!-- Boutons -->  
-<ScrollView  
-    android:layout_width="match_parent"  
-    android:layout_height="0dp"  
-    android:layout_weight="1"  
-    android:padding="12dp">  
-
-    <LinearLayout  
-        android:layout_width="match_parent"  
-        android:layout_height="wrap_content"  
-        android:orientation="vertical">  
-
-        <Button  
-            android:id="@+id/btnPlay"  
-            android:layout_width="match_parent"  
-            android:layout_height="70dp"  
-            android:text="▶️ JOUER"  
-            android:textSize="20sp"  
-            android:textStyle="bold"  
-            android:background="#FF6B6B"  
-            android:textColor="@android:color/white"  
-            android:layout_marginBottom="10dp"/>  
-
-        <Button  
-            android:id="@+id/btnShop"  
-            android:layout_width="match_parent"  
-            android:layout_height="70dp"  
-            android:text="🛍️ BOUTIQUE"  
-            android:textSize="20sp"  
-            android:textStyle="bold"  
-            android:background="#4169E1"  
-            android:textColor="@android:color/white"  
-            android:layout_marginBottom="10dp"/>  
-
-        <Button  
-            android:id="@+id/btnStats"  
-            android:layout_width="match_parent"  
-            android:layout_height="70dp"  
-            android:text="📊 STATISTIQUES"  
-            android:textSize="20sp"  
-            android:textStyle="bold"  
-            android:background="#FF8C00"  
-            android:textColor="@android:color/white"  
-            android:layout_marginBottom="10dp"/>  
-
-        <Button  
-            android:id="@+id/btnLeaderboard"  
-            android:layout_width="match_parent"  
-            android:layout_height="70dp"  
-            android:text="🏆 CLASSEMENT"  
-            android:textSize="20sp"  
-            android:textStyle="bold"  
-            android:background="#9370DB"  
-            android:textColor="@android:color/white"  
-            android:layout_marginBottom="10dp"/>  
-
-        <Button  
-            android:id="@+id/btnHelp"  
-            android:layout_width="match_parent"  
-            android:layout_height="70dp"  
-            android:text="❓ AIDE"  
-            android:textSize="20sp"  
-            android:textStyle="bold"  
-            android:background="#20B2AA"  
-            android:textColor="@android:color/white"  
-            android:layout_marginBottom="10dp"/>  
-
-        <Button  
-            android:id="@+id/btnSettings"  
-            android:layout_width="match_parent"  
-            android:layout_height="70dp"  
-            android:text="⚙️ PARAMÈTRES"  
-            android:textSize="20sp"  
-            android:textStyle="bold"  
-            android:background="#696969"  
-<Button
-    android:id="@+id/btnReward"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    android:text="🎁 Récompense"
-    android:textStyle="bold"
-    android:layout_marginTop="10dp"/>
-            android:textColor="@android:color/white"/>  
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1a1a2e">
 
-    </LinearLayout>  
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="#2a2a3e"
+        android:gravity="center_vertical">
 
-</ScrollView>  
+        <TextView
+            android:id="@+id/tvBalance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Solde: $0.00"
+            android:textColor="#FFD700"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="16dp"/>
 
-<!-- Bannière AdMob -->  
-<com.google.android.gms.ads.AdView  
-    android:id="@+id/adView"  
-    android:layout_width="match_parent"  
-    android:layout_height="wrap_content"  
-    android:layout_gravity="center"  
-    ads:adSize="BANNER"  
-    ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
+        <TextView
+            android:id="@+id/tvCoinsCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🪙 0"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:layout_weight="1"/>
 
+        <Button
+            android:id="@+id/btnWithdraw"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Retirer"
+            android:background="#4CAF50"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+    <!-- Infos utilisateur -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="#2a2a3e"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Guest"
+            android:textColor="#FFD700"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvBestScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Best: 0"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+    <!-- Boutons -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnPlay"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="▶️ JOUER"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="#FF6B6B"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:id="@+id/btnShop"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="🛍️ BOUTIQUE"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="#4169E1"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:id="@+id/btnStats"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="📊 STATISTIQUES"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="#FF8C00"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:id="@+id/btnLeaderboard"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="🏆 CLASSEMENT"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="#9370DB"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:id="@+id/btnHelp"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="❓ AIDE"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="#20B2AA"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
+
+            <Button
+                android:id="@+id/btnSettings"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:text="⚙️ PARAMÈTRES"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:background="#696969"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="10dp"/>
+
+            <!-- Boutons horizontaux des emojis -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/btnReward"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="🎁"
+                    android:textSize="24sp"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/btnDailyReward"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:text="📆"
+                    android:textSize="24sp"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bannière AdMob -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
 </LinearLayout>
