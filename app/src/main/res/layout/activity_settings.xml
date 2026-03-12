@@ -133,7 +133,7 @@
         android:id="@+id/btnRate"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Rate App"
+        android:text="⭐Rate App"
         android:layout_marginBottom="8dp"
         android:background="#32CD32"
         android:textColor="#FFFFFF"/>
@@ -142,7 +142,7 @@
         android:id="@+id/btnShare"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Share App"
+        android:text="🔗Share App"
         android:layout_marginBottom="16dp"
         android:background="#8A2BE2"
         android:textColor="#FFFFFF"/>
