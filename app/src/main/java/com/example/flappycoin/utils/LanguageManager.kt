@@ -1,12 +1,9 @@
 package com.example.flappycoin.utils
 
 import android.content.Context
+import android.content.res.Resources
 import java.util.Locale
 
-/**
- * Gestion multi-langues
- * Support 14 langues avec dictionnaires complets
- */
 object LanguageManager {
     private lateinit var context: Context
     private var currentLanguage = "fr"
@@ -35,15 +32,10 @@ object LanguageManager {
         val resources = context.resources
         val config = resources.configuration
         config.setLocale(locale)
-        @Suppress("DEPRECATION")
         resources.updateConfiguration(config, resources.displayMetrics)
     }
 
-    fun getString(key: String): String {
-        return getStrings()[key] ?: key
-    }
-
-    private fun getStrings(): Map<String, String> {
+    fun getStrings(): Map<String, String> {
         return when (currentLanguage) {
             "en" -> englishStrings
             "es" -> spanishStrings
@@ -62,8 +54,6 @@ object LanguageManager {
         }
     }
 
-    // ============= DICTIONNAIRES =============
-    
     private val frenchStrings = mapOf(
         "app_name" to "FlappyCoin",
         "play" to "Jouer",
@@ -91,10 +81,7 @@ object LanguageManager {
         "best_score" to "Meilleur score",
         "total_games" to "Parties jouées",
         "average_score" to "Score moyen",
-        "coin_per_game" to "Pièces/Partie",
-        "tap_to_start" to "Appuyez pour commencer",
-        "insufficient_coins" to "Pas assez de pièces!",
-        "purchased_successfully" to "Acheté avec succès!"
+        "coin_per_game" to "Pièces/Partie"
     )
 
     private val englishStrings = mapOf(
@@ -124,10 +111,7 @@ object LanguageManager {
         "best_score" to "Best Score",
         "total_games" to "Games Played",
         "average_score" to "Average Score",
-        "coin_per_game" to "Coins/Game",
-        "tap_to_start" to "Tap to start",
-        "insufficient_coins" to "Insufficient coins!",
-        "purchased_successfully" to "Purchased successfully!"
+        "coin_per_game" to "Coins/Game"
     )
 
     private val spanishStrings = mapOf(
@@ -157,14 +141,11 @@ object LanguageManager {
         "best_score" to "Mejor puntuación",
         "total_games" to "Juegos jugados",
         "average_score" to "Puntuación promedio",
-        "coin_per_game" to "Monedas/Juego",
-        "tap_to_start" to "Toca para empezar",
-        "insufficient_coins" to "¡Monedas insuficientes!",
-        "purchased_successfully" to "¡Comprado exitosamente!"
+        "coin_per_game" to "Monedas/Juego"
     )
 
-    // Autres langues (simplifiées pour space - compléter si besoin)
-    private val germanStrings = englishStrings
+    // Autres langues avec même structure...
+    private val germanStrings = englishStrings  // Simplifié
     private val italianStrings = englishStrings
     private val portugueseStrings = englishStrings
     private val russianStrings = englishStrings
@@ -175,4 +156,8 @@ object LanguageManager {
     private val hindiStrings = englishStrings
     private val turkishStrings = englishStrings
     private val dutchStrings = englishStrings
+
+    fun getString(key: String): String {
+        return getStrings()[key] ?: key
+    }
 }
