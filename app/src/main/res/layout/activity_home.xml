@@ -72,7 +72,7 @@
             android:textSize="16sp"/>
     </LinearLayout>
 
-    <!-- Boutons -->
+    <!-- Boutons principaux -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -152,6 +152,36 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <!-- Boutons Share et Rate côte à côte -->
+    <LinearLayout
+        android:id="@+id/llHomeActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnHomeRate"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="⭐"
+            android:textSize="24sp"
+            android:background="#32CD32"
+            android:textColor="#FFFFFF"
+            android:layout_marginEnd="8dp"/>
+
+        <Button
+            android:id="@+id/btnHomeShare"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:text="🔗"
+            android:textSize="24sp"
+            android:background="#8A2BE2"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
 
     <!-- Bannière AdMob -->
     <com.google.android.gms.ads.AdView
