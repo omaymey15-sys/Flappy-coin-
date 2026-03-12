@@ -1,141 +1,171 @@
-package com.example.flappycoin.activities
+<?xml version="1.0" encoding="utf-8"?>  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+xmlns:ads="http://schemas.android.com/apk/res-auto"  
+android:layout_width="match_parent"  
+android:layout_height="match_parent"  
+android:orientation="vertical"  
+android:background="#1a1a2e">
 
-import android.content.Intent
-import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.example.flappycoin.databinding.ActivityHomeBinding
-import com.example.flappycoin.managers.CurrencyManager
-import com.example.flappycoin.managers.GamePreferences
-import com.example.flappycoin.managers.SoundManager
-import com.example.flappycoin.utils.Constants
-import com.example.flappycoin.utils.NetworkManager
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.MobileAds
+<!-- Header -->  
+<LinearLayout  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:orientation="horizontal"  
+    android:padding="12dp"  
+    android:background="#2a2a3e"  
+    android:gravity="center_vertical">  
 
-class HomeActivity : AppCompatActivity() {
+    <TextView  
+        android:id="@+id/tvBalance"  
+        android:layout_width="wrap_content"  
+        android:layout_height="wrap_content"  
+        android:text="Solde: $0.00"  
+        android:textColor="#FFD700"  
+        android:textSize="18sp"  
+        android:textStyle="bold"  
+        android:layout_marginEnd="16dp"/>  
 
-private lateinit var binding: ActivityHomeBinding  
+    <TextView  
+        android:id="@+id/tvCoinsCount"  
+        android:layout_width="wrap_content"  
+        android:layout_height="wrap_content"  
+        android:text="🪙 0"  
+        android:textColor="@android:color/white"  
+        android:textSize="18sp"  
+        android:layout_weight="1"/>  
 
-override fun onCreate(savedInstanceState: Bundle?) {  
-    super.onCreate(savedInstanceState)  
+    <Button  
+        android:id="@+id/btnWithdraw"  
+        android:layout_width="wrap_content"  
+        android:layout_height="wrap_content"  
+        android:text="Retirer"  
+        android:background="#4CAF50"  
+        android:textColor="@android:color/white"/>  
+</LinearLayout>  
 
-    try {  
-        Log.d("HomeActivity", "onCreate started")  
-        binding = ActivityHomeBinding.inflate(layoutInflater)  
-        setContentView(binding.root)  
+<!-- Infos utilisateur -->  
+<LinearLayout  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:orientation="horizontal"  
+    android:padding="12dp"  
+    android:background="#2a2a3e"  
+    android:layout_marginTop="10dp"  
+    android:gravity="center_vertical">  
 
-        // 🔹 Initialisation AdMob  
-        MobileAds.initialize(this) { Log.d("HomeActivity", "AdMob initialized") }  
-        val adRequest = AdRequest.Builder().build()  
-        binding.adView.loadAd(adRequest)  
-        binding.adView.adListener = object : AdListener() {  
-            override fun onAdLoaded() { Log.d("HomeActivity", "Ad loaded") }  
-            override fun onAdFailedToLoad(adError: LoadAdError) {  
-                Log.e("HomeActivity", "Ad failed: ${adError.message}")  
-            }  
-        }  
+    <TextView  
+        android:id="@+id/tvUsername"  
+        android:layout_width="0dp"  
+        android:layout_height="wrap_content"  
+        android:layout_weight="1"  
+        android:text="Guest"  
+        android:textColor="#FFD700"  
+        android:textSize="20sp"  
+        android:textStyle="bold"/>  
 
-        updateUI()  
-        setupListeners()  
-        Log.d("HomeActivity", "✅ onCreate completed")  
+    <TextView  
+        android:id="@+id/tvBestScore"  
+        android:layout_width="wrap_content"  
+        android:layout_height="wrap_content"  
+        android:text="Best: 0"  
+        android:textColor="@android:color/white"  
+        android:textSize="16sp"/>  
+</LinearLayout>  
 
-    } catch (e: Exception) {  
-        Log.e("HomeActivity", "onCreate failed", e)  
-        Toast.makeText(this, "Erreur HomeActivity: ${e.message}", Toast.LENGTH_LONG).show()  
-        finish()  
-    }  
-}  
+<!-- Boutons -->  
+<ScrollView  
+    android:layout_width="match_parent"  
+    android:layout_height="0dp"  
+    android:layout_weight="1"  
+    android:padding="12dp">  
 
-private fun setupListeners() {  
-    binding.btnPlay.setOnClickListener {  
-        if (!NetworkManager.isInternetAvailable(this)) {  
-            Toast.makeText(this, "Connexion internet requise!", Toast.LENGTH_SHORT).show()  
-            return@setOnClickListener  
-        }  
-        SoundManager.playTap()  
-        startActivity(Intent(this, GameActivity::class.java))  
-    }  
+    <LinearLayout  
+        android:layout_width="match_parent"  
+        android:layout_height="wrap_content"  
+        android:orientation="vertical">  
 
-    binding.btnShop.setOnClickListener {  
-        SoundManager.playTap()  
-        startActivity(Intent(this, ShopActivity::class.java))  
-    }  
+        <Button  
+            android:id="@+id/btnPlay"  
+            android:layout_width="match_parent"  
+            android:layout_height="70dp"  
+            android:text="▶️ JOUER"  
+            android:textSize="20sp"  
+            android:textStyle="bold"  
+            android:background="#FF6B6B"  
+            android:textColor="@android:color/white"  
+            android:layout_marginBottom="10dp"/>  
 
-    binding.btnStats.setOnClickListener {  
-        SoundManager.playTap()  
-        startActivity(Intent(this, StatsActivity::class.java))  
-    }  
+        <Button  
+            android:id="@+id/btnShop"  
+            android:layout_width="match_parent"  
+            android:layout_height="70dp"  
+            android:text="🛍️ BOUTIQUE"  
+            android:textSize="20sp"  
+            android:textStyle="bold"  
+            android:background="#4169E1"  
+            android:textColor="@android:color/white"  
+            android:layout_marginBottom="10dp"/>  
 
-    binding.btnLeaderboard.setOnClickListener {  
-        SoundManager.playTap()  
-        startActivity(Intent(this, LeaderboardActivity::class.java))  
-    }  
+        <Button  
+            android:id="@+id/btnStats"  
+            android:layout_width="match_parent"  
+            android:layout_height="70dp"  
+            android:text="📊 STATISTIQUES"  
+            android:textSize="20sp"  
+            android:textStyle="bold"  
+            android:background="#FF8C00"  
+            android:textColor="@android:color/white"  
+            android:layout_marginBottom="10dp"/>  
 
-    binding.btnHelp.setOnClickListener {  
-        SoundManager.playTap()  
-        startActivity(Intent(this, HelpActivity::class.java))  
-    }  
+        <Button  
+            android:id="@+id/btnLeaderboard"  
+            android:layout_width="match_parent"  
+            android:layout_height="70dp"  
+            android:text="🏆 CLASSEMENT"  
+            android:textSize="20sp"  
+            android:textStyle="bold"  
+            android:background="#9370DB"  
+            android:textColor="@android:color/white"  
+            android:layout_marginBottom="10dp"/>  
 
-    binding.btnSettings.setOnClickListener {  
-        SoundManager.playTap()  
-        startActivity(Intent(this, SettingsActivity::class.java))  
-    }  
+        <Button  
+            android:id="@+id/btnHelp"  
+            android:layout_width="match_parent"  
+            android:layout_height="70dp"  
+            android:text="❓ AIDE"  
+            android:textSize="20sp"  
+            android:textStyle="bold"  
+            android:background="#20B2AA"  
+            android:textColor="@android:color/white"  
+            android:layout_marginBottom="10dp"/>  
 
-    binding.btnWithdraw.setOnClickListener {  
-        checkWithdrawal()  
-    }  
-}  
+        <Button  
+            android:id="@+id/btnSettings"  
+            android:layout_width="match_parent"  
+            android:layout_height="70dp"  
+            android:text="⚙️ PARAMÈTRES"  
+            android:textSize="20sp"  
+            android:textStyle="bold"  
+            android:background="#696969"  
+<Button
+    android:id="@+id/btnReward"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:text="🎁 Récompense"
+    android:textStyle="bold"
+    android:layout_marginTop="10dp"/>
+            android:textColor="@android:color/white"/>  
 
-private fun updateUI() {  
-    try {  
-        Log.d("HomeActivity", "updateUI started")  
+    </LinearLayout>  
 
-        val coins = GamePreferences.getTotalCoins()  
-        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)  
-        val username = GamePreferences.getUsername() ?: "Guest"  
-        val bestScore = GamePreferences.getBestScore()  
+</ScrollView>  
 
-        binding.tvUsername.text = username  
-        binding.tvBalance.text = "Solde: $localAmount"  
-        binding.tvCoinsCount.text = "🪙 $coins"  
-        binding.tvBestScore.text = "Best: $bestScore"  
+<!-- Bannière AdMob -->  
+<com.google.android.gms.ads.AdView  
+    android:id="@+id/adView"  
+    android:layout_width="match_parent"  
+    android:layout_height="wrap_content"  
+    android:layout_gravity="center"  
+    ads:adSize="BANNER"  
+    ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
 
-        Log.d("HomeActivity", "✅ updateUI completed")  
-    } catch (e: Exception) {  
-        Log.e("HomeActivity", "updateUI failed", e)  
-        Toast.makeText(this, "Erreur mise à jour UI", Toast.LENGTH_SHORT).show()  
-    }  
-}  
-
-private fun checkWithdrawal() {  
-    try {  
-        val totalCoins = GamePreferences.getTotalCoins()  
-        if (totalCoins < Constants.MINIMUM_WITHDRAWAL_COINS.toInt()) {  
-            val needed = Constants.MINIMUM_WITHDRAWAL_COINS.toInt() - totalCoins  
-            Toast.makeText(  
-                this,  
-                "Minimum: ${Constants.MINIMUM_WITHDRAWAL_DOLLARS.toInt()}$\nManque: $needed coins",  
-                Toast.LENGTH_LONG  
-            ).show()  
-        } else {  
-            Toast.makeText(this, "Retrait simulé", Toast.LENGTH_SHORT).show()  
-        }  
-    } catch (e: Exception) {  
-        Log.e("HomeActivity", "checkWithdrawal failed", e)  
-    }  
-}  
-
-override fun onResume() {  
-    super.onResume()  
-    try {  
-        updateUI()  
-    } catch (e: Exception) {  
-        Log.e("HomeActivity", "onResume failed", e)  
-    }  
-}
-
-}
+</LinearLayout>
