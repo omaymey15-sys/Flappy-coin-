@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#2a2a3e"
+    android:gravity="center"
+    android:layout_margin="16dp">
+
+    <TextView
+        android:id="@+id/tvGiftTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎁 Cadeau"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:layout_marginBottom="16dp"/>
+
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="📤 Partager"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:background="#FF6B6B"
+        android:layout_marginBottom="10dp"/>
+
+    <Button
+        android:id="@+id/btnInvite"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="👫 Inviter"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:background="#4169E1"
+        android:layout_marginBottom="10dp"/>
+
+    <Button
+        android:id="@+id/btnWatch"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="▶️ Regarder pub"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:background="#FFD700"/>
+
+</LinearLayout>
