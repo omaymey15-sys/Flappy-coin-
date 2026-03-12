@@ -1,7 +1,6 @@
 package com.example.flappycoin.activities
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -19,143 +18,124 @@ import com.google.android.gms.ads.MobileAds
 
 class HomeActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityHomeBinding
+private lateinit var binding: ActivityHomeBinding  
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+override fun onCreate(savedInstanceState: Bundle?) {  
+    super.onCreate(savedInstanceState)  
 
-        try {
-            Log.d("HomeActivity", "onCreate started")
-            binding = ActivityHomeBinding.inflate(layoutInflater)
-            setContentView(binding.root)
+    try {  
+        Log.d("HomeActivity", "onCreate started")  
+        binding = ActivityHomeBinding.inflate(layoutInflater)  
+        setContentView(binding.root)  
 
-            // 🔹 Initialisation AdMob
-            MobileAds.initialize(this) { Log.d("HomeActivity", "AdMob initialized") }
-            val adRequest = AdRequest.Builder().build()
-            binding.adView.loadAd(adRequest)
-            binding.adView.adListener = object : AdListener() {
-                override fun onAdLoaded() { Log.d("HomeActivity", "Ad loaded") }
-                override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.e("HomeActivity", "Ad failed: ${adError.message}")
-                }
-            }
+        // 🔹 Initialisation AdMob  
+        MobileAds.initialize(this) { Log.d("HomeActivity", "AdMob initialized") }  
+        val adRequest = AdRequest.Builder().build()  
+        binding.adView.loadAd(adRequest)  
+        binding.adView.adListener = object : AdListener() {  
+            override fun onAdLoaded() { Log.d("HomeActivity", "Ad loaded") }  
+            override fun onAdFailedToLoad(adError: LoadAdError) {  
+                Log.e("HomeActivity", "Ad failed: ${adError.message}")  
+            }  
+        }  
 
-            updateUI()
-            setupListeners()
-            Log.d("HomeActivity", "✅ onCreate completed")
+        updateUI()  
+        setupListeners()  
+        Log.d("HomeActivity", "✅ onCreate completed")  
 
-        } catch (e: Exception) {
-            Log.e("HomeActivity", "onCreate failed", e)
-            Toast.makeText(this, "Erreur HomeActivity: ${e.message}", Toast.LENGTH_LONG).show()
-            finish()
-        }
-    }
+    } catch (e: Exception) {  
+        Log.e("HomeActivity", "onCreate failed", e)  
+        Toast.makeText(this, "Erreur HomeActivity: ${e.message}", Toast.LENGTH_LONG).show()  
+        finish()  
+    }  
+}  
 
-    private fun setupListeners() {
-        binding.btnPlay.setOnClickListener {
-            if (!NetworkManager.isInternetAvailable(this)) {
-                Toast.makeText(this, "Connexion internet requise!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            SoundManager.playTap()
-            startActivity(Intent(this, GameActivity::class.java))
-        }
+private fun setupListeners() {  
+    binding.btnPlay.setOnClickListener {  
+        if (!NetworkManager.isInternetAvailable(this)) {  
+            Toast.makeText(this, "Connexion internet requise!", Toast.LENGTH_SHORT).show()  
+            return@setOnClickListener  
+        }  
+        SoundManager.playTap()  
+        startActivity(Intent(this, GameActivity::class.java))  
+    }  
 
-        binding.btnShop.setOnClickListener {
-            SoundManager.playTap()
-            startActivity(Intent(this, ShopActivity::class.java))
-        }
+    binding.btnShop.setOnClickListener {  
+        SoundManager.playTap()  
+        startActivity(Intent(this, ShopActivity::class.java))  
+    }  
 
-        binding.btnStats.setOnClickListener {
-            SoundManager.playTap()
-            startActivity(Intent(this, StatsActivity::class.java))
-        }
+    binding.btnStats.setOnClickListener {  
+        SoundManager.playTap()  
+        startActivity(Intent(this, StatsActivity::class.java))  
+    }  
 
-        binding.btnLeaderboard.setOnClickListener {
-            SoundManager.playTap()
-            startActivity(Intent(this, LeaderboardActivity::class.java))
-        }
+    binding.btnLeaderboard.setOnClickListener {  
+        SoundManager.playTap()  
+        startActivity(Intent(this, LeaderboardActivity::class.java))  
+    }  
 
-        binding.btnHelp.setOnClickListener {
-            SoundManager.playTap()
-            startActivity(Intent(this, HelpActivity::class.java))
-        }
+    binding.btnHelp.setOnClickListener {  
+        SoundManager.playTap()  
+        startActivity(Intent(this, HelpActivity::class.java))  
+    }  
 
-        binding.btnSettings.setOnClickListener {
-            SoundManager.playTap()
-            startActivity(Intent(this, SettingsActivity::class.java))
-        }
+    binding.btnSettings.setOnClickListener {  
+        SoundManager.playTap()  
+        startActivity(Intent(this, SettingsActivity::class.java))  
+    }  
 
-        binding.btnWithdraw.setOnClickListener {
-            checkWithdrawal()
-        }
+    binding.btnWithdraw.setOnClickListener {  
+        checkWithdrawal()  
+    }  
+}  
 
-        // 🔹 Bouton Rate App ⭐
-        binding.btnHomeRate.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-            startActivity(intent)
-            Log.d("HomeActivity", "⭐ Rate App cliqué depuis Home")
-        }
+private fun updateUI() {  
+    try {  
+        Log.d("HomeActivity", "updateUI started")  
 
-        // 🔹 Bouton Share App 🔗
-        binding.btnHomeShare.setOnClickListener {
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.type = "text/plain"
-            intent.putExtra(
-                Intent.EXTRA_TEXT,
-                "Télécharge mon jeu Flappy Coin ! https://play.google.com/store/apps/details?id=$packageName"
-            )
-            startActivity(Intent.createChooser(intent, "Share via"))
-            Log.d("HomeActivity", "🔗 Share cliqué depuis Home")
-        }
-    }
+        val coins = GamePreferences.getTotalCoins()  
+        val localAmount = CurrencyManager.coinsToLocalCurrency(coins)  
+        val username = GamePreferences.getUsername() ?: "Guest"  
+        val bestScore = GamePreferences.getBestScore()  
 
-    private fun updateUI() {
-        try {
-            Log.d("HomeActivity", "updateUI started")
+        binding.tvUsername.text = username  
+        binding.tvBalance.text = "Solde: $localAmount"  
+        binding.tvCoinsCount.text = "🪙 $coins"  
+        binding.tvBestScore.text = "Best: $bestScore"  
 
-            val coins = GamePreferences.getTotalCoins()
-            val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
-            val username = GamePreferences.getUsername() ?: "Guest"
-            val bestScore = GamePreferences.getBestScore()
+        Log.d("HomeActivity", "✅ updateUI completed")  
+    } catch (e: Exception) {  
+        Log.e("HomeActivity", "updateUI failed", e)  
+        Toast.makeText(this, "Erreur mise à jour UI", Toast.LENGTH_SHORT).show()  
+    }  
+}  
 
-            binding.tvUsername.text = username
-            binding.tvBalance.text = "Solde: $localAmount"
-            binding.tvCoinsCount.text = "🪙 $coins"
-            binding.tvBestScore.text = "Best: $bestScore"
+private fun checkWithdrawal() {  
+    try {  
+        val totalCoins = GamePreferences.getTotalCoins()  
+        if (totalCoins < Constants.MINIMUM_WITHDRAWAL_COINS.toInt()) {  
+            val needed = Constants.MINIMUM_WITHDRAWAL_COINS.toInt() - totalCoins  
+            Toast.makeText(  
+                this,  
+                "Minimum: ${Constants.MINIMUM_WITHDRAWAL_DOLLARS.toInt()}$\nManque: $needed coins",  
+                Toast.LENGTH_LONG  
+            ).show()  
+        } else {  
+            Toast.makeText(this, "Retrait simulé", Toast.LENGTH_SHORT).show()  
+        }  
+    } catch (e: Exception) {  
+        Log.e("HomeActivity", "checkWithdrawal failed", e)  
+    }  
+}  
 
-            Log.d("HomeActivity", "✅ updateUI completed")
-        } catch (e: Exception) {
-            Log.e("HomeActivity", "updateUI failed", e)
-            Toast.makeText(this, "Erreur mise à jour UI", Toast.LENGTH_SHORT).show()
-        }
-    }
+override fun onResume() {  
+    super.onResume()  
+    try {  
+        updateUI()  
+    } catch (e: Exception) {  
+        Log.e("HomeActivity", "onResume failed", e)  
+    }  
+}
 
-    private fun checkWithdrawal() {
-        try {
-            val totalCoins = GamePreferences.getTotalCoins()
-            if (totalCoins < Constants.MINIMUM_WITHDRAWAL_COINS.toInt()) {
-                val needed = Constants.MINIMUM_WITHDRAWAL_COINS.toInt() - totalCoins
-                Toast.makeText(
-                    this,
-                    "Minimum: ${Constants.MINIMUM_WITHDRAWAL_DOLLARS.toInt()}$\nManque: $needed coins",
-                    Toast.LENGTH_LONG
-                ).show()
-            } else {
-                Toast.makeText(this, "Retrait simulé", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            Log.e("HomeActivity", "checkWithdrawal failed", e)
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        try {
-            updateUI()
-        } catch (e: Exception) {
-            Log.e("HomeActivity", "onResume failed", e)
-        }
-    }
 }
