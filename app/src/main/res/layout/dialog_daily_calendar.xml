@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:gravity="center"
+    android:background="#2a2a3e">
+
+    <LinearLayout
+        android:id="@+id/llDays"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="7">
+
+        <Button android:id="@+id/day1" style="@style/DayButton"/>
+        <Button android:id="@+id/day2" style="@style/DayButton"/>
+        <Button android:id="@+id/day3" style="@style/DayButton"/>
+        <Button android:id="@+id/day4" style="@style/DayButton"/>
+        <Button android:id="@+id/day5" style="@style/DayButton"/>
+        <Button android:id="@+id/day6" style="@style/DayButton"/>
+        <Button android:id="@+id/day7" style="@style/DayButton"/>
+
+    </LinearLayout>
+</LinearLayout>
