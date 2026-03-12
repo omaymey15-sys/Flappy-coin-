@@ -1,8 +1,0 @@
-<style name="DayButton">
-    <item name="android:layout_width">50dp</item>
-    <item name="android:layout_height">50dp</item>
-    <item name="android:layout_margin">4dp</item>
-    <item name="android:textSize">18sp</item>
-    <item name="android:background">#FFD700</item>
-    <item name="android:textColor">@android:color/white</item>
-</style>
