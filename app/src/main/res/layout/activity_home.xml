@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#1a1a2e">
+    android:background="#1a1a2e"
+    android:padding="0dp">
 
     <!-- Header -->
     <LinearLayout
@@ -23,7 +24,7 @@
             android:textColor="#FFD700"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:layout_marginEnd="16dp"/>
+            android:layout_marginEnd="16dp" />
 
         <TextView
             android:id="@+id/tvCoinsCount"
@@ -32,7 +33,7 @@
             android:text="🪙 0"
             android:textColor="@android:color/white"
             android:textSize="18sp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/btnWithdraw"
@@ -40,7 +41,7 @@
             android:layout_height="wrap_content"
             android:text="Retirer"
             android:background="#4CAF50"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
     <!-- Infos utilisateur -->
@@ -61,7 +62,7 @@
             android:text="Guest"
             android:textColor="#FFD700"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvBestScore"
@@ -69,10 +70,10 @@
             android:layout_height="wrap_content"
             android:text="Best: 0"
             android:textColor="@android:color/white"
-            android:textSize="16sp"/>
+            android:textSize="16sp" />
     </LinearLayout>
 
-    <!-- Boutons -->
+    <!-- Boutons principaux -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -93,7 +94,7 @@
                 android:textStyle="bold"
                 android:background="#FF6B6B"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnShop"
@@ -104,7 +105,7 @@
                 android:textStyle="bold"
                 android:background="#4169E1"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnStats"
@@ -115,7 +116,7 @@
                 android:textStyle="bold"
                 android:background="#FF8C00"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnLeaderboard"
@@ -126,7 +127,7 @@
                 android:textStyle="bold"
                 android:background="#9370DB"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnHelp"
@@ -137,7 +138,7 @@
                 android:textStyle="bold"
                 android:background="#20B2AA"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnSettings"
@@ -148,9 +149,9 @@
                 android:textStyle="bold"
                 android:background="#696969"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10dp" />
 
-            <!-- Boutons horizontaux des emojis -->
+            <!-- Boutons emoji horizontaux -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -165,8 +166,9 @@
                     android:layout_height="50dp"
                     android:layout_weight="1"
                     android:text="🎁"
-                    android:textSize="24sp"
-                    android:layout_marginEnd="8dp"/>
+                    android:textSize="32sp"
+                    android:layout_marginEnd="8dp"
+                    android:background="#FFDF00" />
 
                 <Button
                     android:id="@+id/btnDailyReward"
@@ -174,8 +176,9 @@
                     android:layout_height="50dp"
                     android:layout_weight="1"
                     android:text="📆"
-                    android:textSize="24sp"
-                    android:layout_marginStart="8dp"/>
+                    android:textSize="32sp"
+                    android:layout_marginStart="8dp"
+                    android:background="#00CED1" />
             </LinearLayout>
 
         </LinearLayout>
@@ -188,5 +191,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
+
 </LinearLayout>
