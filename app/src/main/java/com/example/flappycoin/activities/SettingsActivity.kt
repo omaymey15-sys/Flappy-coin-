@@ -1,5 +1,7 @@
 package com.example.flappycoin.activities
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -57,9 +59,35 @@ class SettingsActivity : AppCompatActivity() {
 
             Log.d(TAG, "✅ Infos profil chargées")
 
+            // 🔹 Boutons Privacy / Rate / Share
+            binding.btnPrivacyPolicy.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse("https://ornannnzembe-ops.github.io/privacy-policy/") // Remplace par ton
+                startActivity(intent)
+                Log.d(TAG, "Privacy Policy cliqué")
+            }
+
+            binding.btnRate.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                startActivity(intent)
+                Log.d(TAG, "⭐Rate App cliqué")
+            }
+
+            binding.btnShare.setOnClickListener {
+                val intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.putExtra(
+                    Intent.EXTRA_TEXT,
+                    "Télécharge mon jeu Flappy Coin ! https://play.google.com/store/apps/details?id=$packageName"
+                )
+                startActivity(Intent.createChooser(intent, "Share via"))
+                Log.d(TAG, "🔗Share App cliqué")
+            }
+
             // 🔹 Bouton retour
             binding.btnBack.setOnClickListener {
-                Log.d(TAG, "⬅️ Retour cliqué")
+                Log.d(TAG, "Retour cliqué")
                 finish()
             }
 
