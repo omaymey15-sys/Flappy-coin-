@@ -18,121 +18,134 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"/>
 
-    <!-- Scrollable pour toutes les options -->
-    <ScrollView
+    <!-- Son -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginBottom="16dp">
+        android:layout_height="60dp"
+        android:background="#2a2a3e"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_weight="1"
+            android:text="🔊 Son"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"/>
 
-            <!-- Son -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
+        <Switch
+            android:id="@+id/swSound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="🔊 Son"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"/>
+    <!-- Vibration -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#2a2a3e"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
 
-                <Switch
-                    android:id="@+id/swSound"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📳 Vibrations"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"/>
 
-            <!-- Vibration -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
+        <Switch
+            android:id="@+id/swVibration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="📳 Vibrations"
-                    android:textColor="#FFFFFF"
-                    android:textSize="16sp"/>
+    <!-- Infos Profil -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Infos Profil"
+        android:textColor="#FFD700"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"/>
 
-                <Switch
-                    android:id="@+id/swVibration"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Utilisateur: Guest"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="#2a2a3e"
+        android:padding="12dp"
+        android:layout_marginBottom="8dp"/>
 
-            <!-- Infos Profil -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Infos Profil"
-                android:textColor="#FFD700"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="8dp"/>
+    <TextView
+        android:id="@+id/tvCountry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Pays: France"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="#2a2a3e"
+        android:padding="12dp"
+        android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/tvUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Utilisateur: Guest"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp"/>
+    <TextView
+        android:id="@+id/tvLanguage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Langue: Français"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="#2a2a3e"
+        android:padding="12dp"
+        android:layout_marginBottom="8dp"/>
 
-            <TextView
-                android:id="@+id/tvCountry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Pays: France"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp"/>
+    <TextView
+        android:id="@+id/tvCurrency"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Devise: EUR"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:background="#2a2a3e"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp"/>
 
-            <TextView
-                android:id="@+id/tvLanguage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Langue: Français"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp"/>
+    <!-- Boutons Privacy, Rate et Share -->
+    <Button
+        android:id="@+id/btnPrivacyPolicy"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Privacy Policy"
+        android:layout_marginBottom="8dp"
+        android:background="#FF8C00"
+        android:textColor="#FFFFFF"/>
 
-            <TextView
-                android:id="@+id/tvCurrency"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Devise: EUR"
-                android:textColor="#FFFFFF"
-                android:textSize="14sp"
-                android:background="#2a2a3e"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp"/>
-        </LinearLayout>
+    <Button
+        android:id="@+id/btnRate"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Rate App"
+        android:layout_marginBottom="8dp"
+        android:background="#32CD32"
+        android:textColor="#FFFFFF"/>
 
-    </ScrollView>
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="Share App"
+        android:layout_marginBottom="16dp"
+        android:background="#8A2BE2"
+        android:textColor="#FFFFFF"/>
 
     <!-- Bouton Retour -->
     <Button
@@ -152,5 +165,4 @@
         android:layout_marginTop="8dp"
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
-
 </LinearLayout>
