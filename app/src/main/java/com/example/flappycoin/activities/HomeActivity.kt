@@ -1,6 +1,7 @@
 package com.example.flappycoin.activities
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -87,6 +88,26 @@ class HomeActivity : AppCompatActivity() {
 
         binding.btnWithdraw.setOnClickListener {
             checkWithdrawal()
+        }
+
+        // 🔹 Bouton Rate App ⭐
+        binding.btnHomeRate.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+            startActivity(intent)
+            Log.d("HomeActivity", "⭐ Rate App cliqué depuis Home")
+        }
+
+        // 🔹 Bouton Share App 🔗
+        binding.btnHomeShare.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(
+                Intent.EXTRA_TEXT,
+                "Télécharge mon jeu Flappy Coin ! https://play.google.com/store/apps/details?id=$packageName"
+            )
+            startActivity(Intent.createChooser(intent, "Share via"))
+            Log.d("HomeActivity", "🔗 Share cliqué depuis Home")
         }
     }
 
