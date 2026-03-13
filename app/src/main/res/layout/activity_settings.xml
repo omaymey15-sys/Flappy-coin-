@@ -164,5 +164,5 @@
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginTop="8dp"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"/>
+        ads:adUnitId="ca-app-pub-1299408509965704/5960673880"/>
 </LinearLayout>
