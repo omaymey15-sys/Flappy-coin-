@@ -59,8 +59,8 @@ class HomeActivity : AppCompatActivity() {
         binding.btnHelp.text = L("help")
         binding.btnSettings.text = L("settings")
         binding.btnWithdraw.text = L("withdraw")
-        binding.btnReward.text = L("watch_ad")
-        binding.btnDailyReward.text = L("revive")
+        binding.btnReward.text = L("🎁")
+        binding.btnDailyReward.text = L("📆")
     }
 
     private fun setupListeners() {
