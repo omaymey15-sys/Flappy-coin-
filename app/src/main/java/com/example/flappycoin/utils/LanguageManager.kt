@@ -482,7 +482,4 @@ private val dutchStrings = mapOf(
     "average_score" to "Gemiddelde Score",
     "coin_per_game" to "Munten/Spel"
 )
-fun getString(key: String): String {
-    return getStrings()[key] ?: key
-}
 } // ← fin de l'objet LanguageManager
