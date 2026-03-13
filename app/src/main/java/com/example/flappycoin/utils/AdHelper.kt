@@ -1,4 +1,4 @@
-package com.example.flappycoin.utils
+apackage com.example.flappycoin.utils
 
 import android.app.Activity
 import android.os.Handler
