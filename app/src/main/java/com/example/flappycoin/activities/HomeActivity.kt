@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.Button
@@ -41,12 +42,16 @@ class HomeActivity : AppCompatActivity() {
         binding.adView.adListener = object : AdListener() {
             override fun onAdLoaded() {}
             override fun onAdFailedToLoad(adError: LoadAdError) {
-                Toast.makeText(this@HomeActivity, "Erreur pub: ${adError.message}", Toast.LENGTH_SHORT).show()
+                Log.e("HomeActivity", adError.message)
             }
         }
 
         setupListeners()
         updateUI()
+
+        // Charger pub interstitielle et récompensée
+        AdHelper.loadInterstitial(this)
+        AdHelper.loadRewardedAd(this)
     }
 
     private fun setupListeners() {
@@ -86,7 +91,10 @@ class HomeActivity : AppCompatActivity() {
 
         binding.btnWithdraw.setOnClickListener { checkWithdrawal() }
         binding.btnReward.setOnClickListener { showGiftPopup() }
-        binding.btnDailyReward.setOnClickListener { showDailyPopup() }
+        binding.btnDailyReward.setOnClickListener {
+            val todayIndex = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
+            showDailyPopup(todayIndex)
+        }
     }
 
     private fun updateUI() {
@@ -111,11 +119,11 @@ class HomeActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
         } else {
-            Toast.makeText(this, "Retrait effectué (simulé)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Retrait simulé", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // --- Popup cadeau ---
+    // --- Popup cadeau (partage/invitation/pub) ---
     private fun showGiftPopup() {
         val popupView = LayoutInflater.from(this).inflate(R.layout.popup_gift, null)
         val popupWindow = PopupWindow(
@@ -126,7 +134,7 @@ class HomeActivity : AppCompatActivity() {
         )
         popupWindow.elevation = 10f
 
-        // 🔹 Partage max 2 fois/jour
+        // Partage (max 2 fois/jour)
         popupView.findViewById<Button>(R.id.btnShare).setOnClickListener {
             if (GamePreferences.canShareApp()) {
                 val shareIntent = Intent(Intent.ACTION_SEND)
@@ -137,14 +145,14 @@ class HomeActivity : AppCompatActivity() {
                 handler.postDelayed({
                     GamePreferences.addCoins(10)
                     GamePreferences.recordShare()
-                    Toast.makeText(this, "+10 coins pour partage !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "+10 coins après partage !", Toast.LENGTH_SHORT).show()
                     updateUI()
                 }, 5000)
-            } else Toast.makeText(this, "Limite de partage atteinte aujourd'hui", Toast.LENGTH_SHORT).show()
+            } else Toast.makeText(this, "Limite partage atteinte aujourd'hui", Toast.LENGTH_SHORT).show()
             popupWindow.dismiss()
         }
 
-        // 🔹 Invitation max 1 fois/jour
+        // Invitation (max 1 fois/jour)
         popupView.findViewById<Button>(R.id.btnInvite).setOnClickListener {
             if (GamePreferences.canInviteFriend()) {
                 val inviteIntent = Intent(Intent.ACTION_SEND)
@@ -153,30 +161,30 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(Intent.createChooser(inviteIntent, "Inviter un ami"))
 
                 handler.postDelayed({
-                    GamePreferences.addCoins(10)
+                    GamePreferences.addCoins(10) // 10 coins pour l'invitation
                     GamePreferences.recordInvite()
-                    Toast.makeText(this, "+10 coins pour invitation !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "+10 coins après invitation !", Toast.LENGTH_SHORT).show()
                     updateUI()
                 }, 5000)
             } else Toast.makeText(this, "Invitation déjà utilisée aujourd'hui", Toast.LENGTH_SHORT).show()
             popupWindow.dismiss()
         }
 
-        // 🔹 Pub récompensée
+        // Pub récompensée
         popupView.findViewById<Button>(R.id.btnWatch).setOnClickListener {
             AdHelper.showRewardedAd(this) { reward ->
                 GamePreferences.addCoins(reward.amount)
-                Toast.makeText(this, "+${reward.amount} coins (pub récompensée)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "+${reward.amount} coins (pub) !", Toast.LENGTH_SHORT).show()
                 updateUI()
-                popupWindow.dismiss()
             }
+            popupWindow.dismiss()
         }
 
         popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
     }
 
     // --- Popup calendrier quotidien ---
-    private fun showDailyPopup() {
+    private fun showDailyPopup(today: Int) {
         val popupView = LayoutInflater.from(this).inflate(R.layout.popup_daily, null)
         val popupWindow = PopupWindow(
             popupView,
@@ -196,11 +204,10 @@ class HomeActivity : AppCompatActivity() {
             popupView.findViewById<Button>(R.id.day7)
         )
         val coinsWeek = listOf(10, 10, 10, 10, 10, 20, 20)
-        val todayIndex = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
 
         days.forEachIndexed { index, button ->
-            button.isEnabled = index == todayIndex
-            if (index == todayIndex) {
+            button.isEnabled = index == today
+            if (index == today) {
                 button.setOnClickListener {
                     GamePreferences.addCoins(coinsWeek[index])
                     Toast.makeText(this, "+${coinsWeek[index]} coins !", Toast.LENGTH_SHORT).show()
