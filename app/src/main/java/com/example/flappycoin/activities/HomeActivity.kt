@@ -1,14 +1,11 @@
 package com.example.flappycoin.activities
 
-import android.animation.*
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.PopupWindow
@@ -19,245 +16,175 @@ import com.example.flappycoin.databinding.ActivityHomeBinding
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.SoundManager
-import com.example.flappycoin.utils.*
-import com.google.android.gms.ads.*
+import com.example.flappycoin.utils.AdHelper
+import com.example.flappycoin.utils.Constants
+import com.example.flappycoin.utils.NetworkManager
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.MobileAds
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
     private val handler = Handler(Looper.getMainLooper())
 
-    private var shareCountToday = 0
-    private var inviteCountToday = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        LanguageManager.init(this)
-
-        initAds()
-        setupListeners()
-        startAnimations()
-
-        updateUI()
-
-        AdHelper.loadInterstitial(this)
-        AdHelper.loadRewardedAd(this)
-    }
-
-    // ---------------- ADS ----------------
-
-    private fun initAds() {
-
+        // 🔹 Initialisation AdMob
         MobileAds.initialize(this) {}
-
         val adRequest = AdRequest.Builder().build()
-
         binding.adView.loadAd(adRequest)
-
         binding.adView.adListener = object : AdListener() {
-
+            override fun onAdLoaded() {}
             override fun onAdFailedToLoad(adError: LoadAdError) {
-                Log.e("HomeActivity", adError.message)
+                Toast.makeText(this@HomeActivity, "Erreur pub: ${adError.message}", Toast.LENGTH_SHORT).show()
             }
         }
+
+        setupListeners()
+        updateUI()
     }
-
-    // ---------------- ANIMATIONS ----------------
-
-    private fun startAnimations() {
-
-        animateButton(binding.btnReward)
-        animateButton(binding.btnDailyReward)
-
-        val logoAnim = ObjectAnimator.ofFloat(binding.imgLogo, "rotation", -2f, 2f)
-        logoAnim.duration = 1500
-        logoAnim.repeatCount = ObjectAnimator.INFINITE
-        logoAnim.repeatMode = ObjectAnimator.REVERSE
-        logoAnim.start()
-    }
-
-    private fun animateButton(button: Button) {
-
-        val scaleX = ObjectAnimator.ofFloat(button, "scaleX", 1f, 1.15f, 1f)
-        val scaleY = ObjectAnimator.ofFloat(button, "scaleY", 1f, 1.15f, 1f)
-
-        val set = AnimatorSet()
-        set.playTogether(scaleX, scaleY)
-
-        set.duration = 900
-        set.interpolator = AccelerateDecelerateInterpolator()
-        set.repeatCount = ObjectAnimator.INFINITE
-
-        set.start()
-    }
-
-    // ---------------- LISTENERS ----------------
 
     private fun setupListeners() {
-
         binding.btnPlay.setOnClickListener {
-
             if (!NetworkManager.isInternetAvailable(this)) {
-
-                Toast.makeText(
-                    this,
-                    LanguageManager.getString("internet_required"),
-                    Toast.LENGTH_SHORT
-                ).show()
-
+                Toast.makeText(this, "Connexion internet requise!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-
             SoundManager.playTap()
-
             startActivity(Intent(this, GameActivity::class.java))
         }
 
         binding.btnShop.setOnClickListener {
-
             SoundManager.playTap()
             startActivity(Intent(this, ShopActivity::class.java))
         }
 
         binding.btnStats.setOnClickListener {
-
             SoundManager.playTap()
             startActivity(Intent(this, StatsActivity::class.java))
         }
 
         binding.btnLeaderboard.setOnClickListener {
-
             SoundManager.playTap()
             startActivity(Intent(this, LeaderboardActivity::class.java))
         }
 
         binding.btnHelp.setOnClickListener {
-
             SoundManager.playTap()
             startActivity(Intent(this, HelpActivity::class.java))
         }
 
         binding.btnSettings.setOnClickListener {
-
             SoundManager.playTap()
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
         binding.btnWithdraw.setOnClickListener { checkWithdrawal() }
-
         binding.btnReward.setOnClickListener { showGiftPopup() }
-
         binding.btnDailyReward.setOnClickListener { showDailyPopup() }
     }
 
-    // ---------------- UPDATE UI ----------------
-
     private fun updateUI() {
-
         val coins = GamePreferences.getTotalCoins()
-
         val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
-
-        val username =
-            GamePreferences.getUsername() ?: LanguageManager.getString("guest")
-
+        val username = GamePreferences.getUsername() ?: "Guest"
         val bestScore = GamePreferences.getBestScore()
 
         binding.tvUsername.text = username
-
-        binding.tvBalance.text =
-            "${LanguageManager.getString("balance")}: $localAmount"
-
+        binding.tvBalance.text = "Solde: $localAmount"
         binding.tvCoinsCount.text = "🪙 $coins"
-
-        binding.tvBestScore.text =
-            "${LanguageManager.getString("best_score")}: $bestScore"
+        binding.tvBestScore.text = "Best: $bestScore"
     }
 
-    // ---------------- WITHDRAW ----------------
-
     private fun checkWithdrawal() {
-
         val totalCoins = GamePreferences.getTotalCoins()
-
         if (totalCoins < Constants.MINIMUM_WITHDRAWAL_COINS.toInt()) {
-
-            val needed =
-                Constants.MINIMUM_WITHDRAWAL_COINS.toInt() - totalCoins
-
+            val needed = Constants.MINIMUM_WITHDRAWAL_COINS.toInt() - totalCoins
             Toast.makeText(
                 this,
-                "${LanguageManager.getString("minimum_withdrawal")}\n$needed coins",
+                "Minimum: ${Constants.MINIMUM_WITHDRAWAL_DOLLARS.toInt()}$\nManque: $needed coins",
                 Toast.LENGTH_LONG
             ).show()
-
         } else {
-
-            Toast.makeText(
-                this,
-                LanguageManager.getString("withdraw"),
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Retrait effectué (simulé)", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // ---------------- POPUP REWARD ----------------
-
+    // --- Popup cadeau ---
     private fun showGiftPopup() {
-
-        val popupView =
-            LayoutInflater.from(this).inflate(R.layout.popup_gift, null)
-
+        val popupView = LayoutInflater.from(this).inflate(R.layout.popup_gift, null)
         val popupWindow = PopupWindow(
             popupView,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             true
         )
+        popupWindow.elevation = 10f
 
-        popupView.findViewById<Button>(R.id.btnWatch).setOnClickListener {
+        // 🔹 Partage max 2 fois/jour
+        popupView.findViewById<Button>(R.id.btnShare).setOnClickListener {
+            if (GamePreferences.canShareApp()) {
+                val shareIntent = Intent(Intent.ACTION_SEND)
+                shareIntent.type = "text/plain"
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "Viens jouer à FlappyCoin ! https://fake.link/share")
+                startActivity(Intent.createChooser(shareIntent, "Partager avec..."))
 
-            AdHelper.showRewardedAd(this) { reward ->
-
-                GamePreferences.addCoins(reward.amount)
-
-                Toast.makeText(
-                    this,
-                    "+${reward.amount} coins",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                updateUI()
-            }
-
+                handler.postDelayed({
+                    GamePreferences.addCoins(10)
+                    GamePreferences.recordShare()
+                    Toast.makeText(this, "+10 coins pour partage !", Toast.LENGTH_SHORT).show()
+                    updateUI()
+                }, 5000)
+            } else Toast.makeText(this, "Limite de partage atteinte aujourd'hui", Toast.LENGTH_SHORT).show()
             popupWindow.dismiss()
+        }
+
+        // 🔹 Invitation max 1 fois/jour
+        popupView.findViewById<Button>(R.id.btnInvite).setOnClickListener {
+            if (GamePreferences.canInviteFriend()) {
+                val inviteIntent = Intent(Intent.ACTION_SEND)
+                inviteIntent.type = "text/plain"
+                inviteIntent.putExtra(Intent.EXTRA_TEXT, "Invitez un ami à FlappyCoin ! https://fake.link/invite")
+                startActivity(Intent.createChooser(inviteIntent, "Inviter un ami"))
+
+                handler.postDelayed({
+                    GamePreferences.addCoins(10)
+                    GamePreferences.recordInvite()
+                    Toast.makeText(this, "+10 coins pour invitation !", Toast.LENGTH_SHORT).show()
+                    updateUI()
+                }, 5000)
+            } else Toast.makeText(this, "Invitation déjà utilisée aujourd'hui", Toast.LENGTH_SHORT).show()
+            popupWindow.dismiss()
+        }
+
+        // 🔹 Pub récompensée
+        popupView.findViewById<Button>(R.id.btnWatch).setOnClickListener {
+            AdHelper.showRewardedAd(this) { reward ->
+                GamePreferences.addCoins(reward.amount)
+                Toast.makeText(this, "+${reward.amount} coins (pub récompensée)", Toast.LENGTH_SHORT).show()
+                updateUI()
+                popupWindow.dismiss()
+            }
         }
 
         popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
     }
 
-    // ---------------- DAILY REWARD ----------------
-
+    // --- Popup calendrier quotidien ---
     private fun showDailyPopup() {
-
-        val popupView =
-            LayoutInflater.from(this).inflate(R.layout.popup_daily, null)
-
+        val popupView = LayoutInflater.from(this).inflate(R.layout.popup_daily, null)
         val popupWindow = PopupWindow(
             popupView,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT,
             true
         )
-
-        val coinsWeek = listOf(10, 10, 10, 10, 10, 20, 20)
-
-        val today =
-            (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
+        popupWindow.elevation = 10f
 
         val days = listOf(
             popupView.findViewById<Button>(R.id.day1),
@@ -268,25 +195,17 @@ class HomeActivity : AppCompatActivity() {
             popupView.findViewById<Button>(R.id.day6),
             popupView.findViewById<Button>(R.id.day7)
         )
+        val coinsWeek = listOf(10, 10, 10, 10, 10, 20, 20)
+        val todayIndex = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
 
         days.forEachIndexed { index, button ->
-
-            button.isEnabled = index == today
-
-            if (index == today) {
-
+            button.isEnabled = index == todayIndex
+            if (index == todayIndex) {
                 button.setOnClickListener {
-
                     GamePreferences.addCoins(coinsWeek[index])
-
-                    Toast.makeText(
-                        this,
-                        "+${coinsWeek[index]} coins",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
+                    Toast.makeText(this, "+${coinsWeek[index]} coins !", Toast.LENGTH_SHORT).show()
+                    button.isEnabled = false
                     popupWindow.dismiss()
-
                     updateUI()
                 }
             }
