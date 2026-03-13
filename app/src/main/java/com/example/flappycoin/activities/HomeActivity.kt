@@ -16,21 +16,16 @@ import com.example.flappycoin.databinding.ActivityHomeBinding
 import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.SoundManager
+import com.example.flappycoin.utils.AdHelper
 import com.example.flappycoin.utils.Constants
 import com.example.flappycoin.utils.LanguageManager
 import com.example.flappycoin.utils.NetworkManager
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.rewarded.RewardItem
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import java.text.SimpleDateFormat
 import java.util.*
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
-    private var rewardedAd: RewardedAd? = null
     private val handler = Handler()
     private var updateRunnable: Runnable? = null
 
@@ -40,7 +35,7 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         LanguageManager.init(this)
-        binding.adView.loadAd(AdRequest.Builder().build())
+        binding.adView.loadAd(com.google.android.gms.ads.AdRequest.Builder().build())
 
         binding.btnReward.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_in_out1))
         binding.btnDailyReward.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_in_out2))
@@ -48,7 +43,10 @@ class HomeActivity : AppCompatActivity() {
         setupListeners()
         updateUI()
         updateTexts()
-        loadRewardedAd()
+
+        // Charger toutes les pubs
+        AdHelper.loadInterstitial(this)
+        AdHelper.loadRewardedAd(this)
     }
 
     private fun updateTexts() {
@@ -104,17 +102,6 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    // --- Rewarded Ad ---
-    private fun loadRewardedAd() {
-        val adRequest = AdRequest.Builder().build()
-        RewardedAd.load(this,             "ca-app-pub-3940256099942544/5224354917", adRequest, object : RewardedAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                rewardedAd = null
-            }
-            override fun onAdLoaded(ad: RewardedAd) { rewardedAd = ad }
-        })
-    }
-
     // --- Popup cadeaux (Share / Invite / Watch) ---
     private fun showGiftPopup() {
         val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
@@ -126,7 +113,6 @@ class HomeActivity : AppCompatActivity() {
         val btnInvite = popupView.findViewById<Button>(R.id.btnInvite)
         val btnWatch = popupView.findViewById<Button>(R.id.btnWatch)
 
-        // Initial state
         btnShare.isEnabled = GamePreferences.canShareApp(today)
         btnInvite.isEnabled = GamePreferences.canInviteFriend(today)
         btnWatch.isEnabled = GamePreferences.canWatchRewardedAd()
@@ -134,14 +120,10 @@ class HomeActivity : AppCompatActivity() {
         btnInvite.alpha = if (btnInvite.isEnabled) 1f else 0.5f
         btnWatch.alpha = if (btnWatch.isEnabled) 1f else 0.5f
 
-        // Runnable pour activer pub toutes les 5 min
         updateRunnable = object : Runnable {
             override fun run() {
-                val canWatch = GamePreferences.canWatchRewardedAd()
-                if (btnWatch.isEnabled != canWatch) {
-                    btnWatch.isEnabled = canWatch
-                    btnWatch.alpha = if (canWatch) 1f else 0.5f
-                }
+                btnWatch.isEnabled = GamePreferences.canWatchRewardedAd()
+                btnWatch.alpha = if (btnWatch.isEnabled) 1f else 0.5f
                 handler.postDelayed(this, 1000)
             }
         }
@@ -155,10 +137,17 @@ class HomeActivity : AppCompatActivity() {
                 type = "text/plain"
             }
             startActivity(Intent.createChooser(shareIntent, "Partager l'application via"))
+
+            btnShare.isEnabled = false
+            btnShare.alpha = 0.5f
             GamePreferences.recordShare(today)
-            GamePreferences.addCoins(Constants.SHARE_REWARD)
-            Toast.makeText(this, "+${Constants.SHARE_REWARD} coins (partage)!", Toast.LENGTH_SHORT).show()
-            updateUI()
+
+            handler.postDelayed({
+                GamePreferences.addCoins(Constants.SHARE_REWARD)
+                Toast.makeText(this, "+${Constants.SHARE_REWARD} coins (partage)!", Toast.LENGTH_SHORT).show()
+                updateUI()
+            }, 10_000)
+
             popupWindow.dismiss()
             handler.removeCallbacks(updateRunnable!!)
         }
@@ -171,23 +160,31 @@ class HomeActivity : AppCompatActivity() {
                 type = "text/plain"
             }
             startActivity(Intent.createChooser(inviteIntent, "Inviter un ami via"))
+
+            btnInvite.isEnabled = false
+            btnInvite.alpha = 0.5f
             GamePreferences.recordInvite(today)
-            GamePreferences.addCoins(Constants.INVITE_REWARD)
-            Toast.makeText(this, "+${Constants.INVITE_REWARD} coins (invité)!", Toast.LENGTH_SHORT).show()
-            updateUI()
+
+            handler.postDelayed({
+                GamePreferences.addCoins(Constants.INVITE_REWARD)
+                Toast.makeText(this, "+${Constants.INVITE_REWARD} coins (invité)!", Toast.LENGTH_SHORT).show()
+                updateUI()
+            }, 10_000)
+
             popupWindow.dismiss()
             handler.removeCallbacks(updateRunnable!!)
         }
 
         btnWatch.setOnClickListener {
-            if (!btnWatch.isEnabled || rewardedAd == null) return@setOnClickListener
-            rewardedAd?.show(this) { rewardItem: RewardItem ->
+            if (!btnWatch.isEnabled) return@setOnClickListener
+
+            AdHelper.showRewardedAd(this) { rewardItem ->
                 GamePreferences.addCoins(rewardItem.amount)
                 GamePreferences.setLastRewardedAdTime(System.currentTimeMillis())
                 Toast.makeText(this, "+${rewardItem.amount} coins (pub)!", Toast.LENGTH_SHORT).show()
                 updateUI()
-                loadRewardedAd()
             }
+
             popupWindow.dismiss()
             handler.removeCallbacks(updateRunnable!!)
         }
@@ -242,5 +239,17 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         updateUI()
+        // Programmer pub toutes les 5 minutes
+        AdHelper.scheduleRewardedEvery5Minutes(this) { rewardItem ->
+            GamePreferences.addCoins(rewardItem.amount)
+            GamePreferences.setLastRewardedAdTime(System.currentTimeMillis())
+            Toast.makeText(this, "+${rewardItem.amount} coins (pub 5min)!", Toast.LENGTH_SHORT).show()
+            updateUI()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        AdHelper.cancelScheduledRewarded()
     }
 }
