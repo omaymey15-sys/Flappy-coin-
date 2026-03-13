@@ -7,12 +7,13 @@ import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import android.animation.*
+import android.view.animation.AccelerateDecelerateInterpolator
 import com.example.flappycoin.R
 import com.example.flappycoin.databinding.ActivityHomeBinding
 import com.example.flappycoin.managers.CurrencyManager
@@ -20,12 +21,12 @@ import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.SoundManager
 import com.example.flappycoin.utils.AdHelper
 import com.example.flappycoin.utils.Constants
+import com.example.flappycoin.utils.LanguageManager
 import com.example.flappycoin.utils.NetworkManager
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
-import android.animation.*
 
 class HomeActivity : AppCompatActivity() {
 
@@ -50,9 +51,12 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        // 🔹 Animations bouton avec bounce + glow
+        // 🔹 Animations boutons
         animateButtonBounceGlow(binding.btnReward)
         animateButtonBounceGlow(binding.btnDailyReward)
+
+        // 🔹 Définir tous les textes via LanguageManager
+        setDynamicTexts()
 
         setupListeners()
         updateUI()
@@ -60,6 +64,18 @@ class HomeActivity : AppCompatActivity() {
         // Charger pub interstitielle et récompensée
         AdHelper.loadInterstitial(this)
         AdHelper.loadRewardedAd(this)
+    }
+
+    private fun setDynamicTexts() {
+        binding.btnPlay.text = LanguageManager.getString("play")
+        binding.btnShop.text = LanguageManager.getString("shop")
+        binding.btnStats.text = LanguageManager.getString("stats")
+        binding.btnLeaderboard.text = LanguageManager.getString("leaderboard")
+        binding.btnHelp.text = LanguageManager.getString("help")
+        binding.btnSettings.text = LanguageManager.getString("settings")
+        binding.btnWithdraw.text = LanguageManager.getString("withdraw")
+        binding.btnReward.text = LanguageManager.getString("reward")
+        binding.btnDailyReward.text = LanguageManager.getString("daily_reward")
     }
 
     private fun animateButtonBounceGlow(button: Button) {
@@ -88,7 +104,7 @@ class HomeActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.btnPlay.setOnClickListener {
             if (!NetworkManager.isInternetAvailable(this)) {
-                Toast.makeText(this, "Connexion internet requise!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, LanguageManager.getString("internet_required"), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             SoundManager.playTap()
@@ -128,13 +144,13 @@ class HomeActivity : AppCompatActivity() {
     private fun updateUI() {
         val coins = GamePreferences.getTotalCoins()
         val localAmount = CurrencyManager.coinsToLocalCurrency(coins)
-        val username = GamePreferences.getUsername() ?: "Guest"
+        val username = GamePreferences.getUsername() ?: LanguageManager.getString("guest")
         val bestScore = GamePreferences.getBestScore()
 
         binding.tvUsername.text = username
-        binding.tvBalance.text = "Solde: $localAmount"
+        binding.tvBalance.text = "${LanguageManager.getString("withdraw")}: $localAmount"
         binding.tvCoinsCount.text = "🪙 $coins"
-        binding.tvBestScore.text = "Best: $bestScore"
+        binding.tvBestScore.text = "${LanguageManager.getString("best_score")}: $bestScore"
     }
 
     private fun checkWithdrawal() {
@@ -143,74 +159,58 @@ class HomeActivity : AppCompatActivity() {
             val needed = Constants.MINIMUM_WITHDRAWAL_COINS.toInt() - totalCoins
             Toast.makeText(
                 this,
-                "Minimum: ${Constants.MINIMUM_WITHDRAWAL_DOLLARS.toInt()}$\nManque: $needed coins",
+                "${LanguageManager.getString("minimum_withdrawal")}\n${LanguageManager.getString("missing")}: $needed ${LanguageManager.getString("coins")}",
                 Toast.LENGTH_LONG
             ).show()
         } else {
-            Toast.makeText(this, "Retrait simulé", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, LanguageManager.getString("withdraw_simulated"), Toast.LENGTH_SHORT).show()
         }
     }
 
     // --- Popup cadeau ---
     private fun showGiftPopup() {
         val popupView = LayoutInflater.from(this).inflate(R.layout.popup_gift, null)
-        val popupWindow = PopupWindow(
-            popupView,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            true
-        )
+        val popupWindow = PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
         popupWindow.elevation = 10f
 
-        // 🔹 Partage réel
+        popupView.findViewById<Button>(R.id.btnShare).text = LanguageManager.getString("share")
+        popupView.findViewById<Button>(R.id.btnInvite).text = LanguageManager.getString("invite")
+        popupView.findViewById<Button>(R.id.btnWatch).text = LanguageManager.getString("watch_ad")
+
         popupView.findViewById<Button>(R.id.btnShare).setOnClickListener {
             if (shareCountToday >= 2) {
-                Toast.makeText(this, "Limite partage atteinte (2/jour)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, LanguageManager.getString("share_limit"), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val shareIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(
-                    Intent.EXTRA_TEXT,
-                    "Regarde FlappyCoin ! Télécharge ici: https://play.google.com/store/apps/details?id=$packageName"
-                )
-                type = "text/plain"
-            }
-            startActivity(Intent.createChooser(shareIntent, "Partager via"))
-            GamePreferences.addCoins(10)
-            shareCountToday++
-            Toast.makeText(this, "+10 coins (partagé) !", Toast.LENGTH_SHORT).show()
-            updateUI()
+            Toast.makeText(this, LanguageManager.getString("preparing_share"), Toast.LENGTH_SHORT).show()
+            handler.postDelayed({
+                GamePreferences.addCoins(10)
+                shareCountToday++
+                Toast.makeText(this, "+10 ${LanguageManager.getString("coins")}!", Toast.LENGTH_SHORT).show()
+                updateUI()
+            }, 5000)
             popupWindow.dismiss()
         }
 
-        // 🔹 Invitation réelle
         popupView.findViewById<Button>(R.id.btnInvite).setOnClickListener {
             if (inviteCountToday >= 1) {
-                Toast.makeText(this, "Limite invitation atteinte (1/jour)", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, LanguageManager.getString("invite_limit"), Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val inviteIntent = Intent().apply {
-                action = Intent.ACTION_SEND
-                putExtra(
-                    Intent.EXTRA_TEXT,
-                    "Rejoins-moi sur FlappyCoin ! Télécharge ici: https://play.google.com/store/apps/details?id=$packageName"
-                )
-                type = "text/plain"
-            }
-            startActivity(Intent.createChooser(inviteIntent, "Inviter un ami via"))
-            GamePreferences.addCoins(10)
-            inviteCountToday++
-            Toast.makeText(this, "+10 coins (invité) !", Toast.LENGTH_SHORT).show()
-            updateUI()
+            Toast.makeText(this, LanguageManager.getString("sending_invite"), Toast.LENGTH_SHORT).show()
+            handler.postDelayed({
+                GamePreferences.addCoins(10)
+                inviteCountToday++
+                Toast.makeText(this, "+10 ${LanguageManager.getString("coins")}!", Toast.LENGTH_SHORT).show()
+                updateUI()
+            }, 5000)
             popupWindow.dismiss()
         }
 
-        // 🔹 Rewarded Ad réelle
         popupView.findViewById<Button>(R.id.btnWatch).setOnClickListener {
             AdHelper.showRewardedAd(this) { reward ->
                 GamePreferences.addCoins(reward.amount)
-                Toast.makeText(this, "+${reward.amount} coins (pub) !", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "+${reward.amount} ${LanguageManager.getString("coins")}!", Toast.LENGTH_SHORT).show()
                 updateUI()
             }
             popupWindow.dismiss()
@@ -222,12 +222,7 @@ class HomeActivity : AppCompatActivity() {
     // --- Popup calendrier quotidien ---
     private fun showDailyPopup() {
         val popupView = LayoutInflater.from(this).inflate(R.layout.popup_daily, null)
-        val popupWindow = PopupWindow(
-            popupView,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            true
-        )
+        val popupWindow = PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
         popupWindow.elevation = 10f
 
         val days = listOf(
@@ -247,7 +242,7 @@ class HomeActivity : AppCompatActivity() {
             if (index == todayIndex) {
                 button.setOnClickListener {
                     GamePreferences.addCoins(coinsWeek[index])
-                    Toast.makeText(this, "+${coinsWeek[index]} coins !", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "+${coinsWeek[index]} ${LanguageManager.getString("coins")}!", Toast.LENGTH_SHORT).show()
                     button.isEnabled = false
                     popupWindow.dismiss()
                     updateUI()
