@@ -12,8 +12,8 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import android.animation.*
+import androidx.appcompat.app.AppCompatActivity
 import com.example.flappycoin.R
 import com.example.flappycoin.databinding.ActivityHomeBinding
 import com.example.flappycoin.managers.CurrencyManager
@@ -26,6 +26,7 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import java.util.Calendar
 
 class HomeActivity : AppCompatActivity() {
 
@@ -52,15 +53,7 @@ class HomeActivity : AppCompatActivity() {
         animateButtonBounceGlow(binding.btnReward)
         animateButtonBounceGlow(binding.btnDailyReward)
 
-        // Calculer le jour actuel pour le calendrier quotidien
-        val todayIndex = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
-
-        // Clic sur bouton quotidien
-        binding.btnDailyReward.setOnClickListener {
-            showDailyPopup(todayIndex)
-        }
-
-        setupListeners(todayIndex)
+        setupListeners()
         updateUI()
 
         // Charger pub interstitielle et récompensée
@@ -68,10 +61,13 @@ class HomeActivity : AppCompatActivity() {
         AdHelper.loadRewardedAd(this)
     }
 
-    // 🔹 Animation bounce + glow
     private fun animateButtonBounceGlow(button: Button) {
         val scaleX = ObjectAnimator.ofFloat(button, "scaleX", 1f, 1.2f, 1f)
         val scaleY = ObjectAnimator.ofFloat(button, "scaleY", 1f, 1.2f, 1f)
+        scaleX.repeatCount = ValueAnimator.INFINITE
+        scaleY.repeatCount = ValueAnimator.INFINITE
+        scaleX.repeatMode = ValueAnimator.REVERSE
+        scaleY.repeatMode = ValueAnimator.REVERSE
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             button.elevation = 10f
@@ -88,11 +84,10 @@ class HomeActivity : AppCompatActivity() {
         bounceSet.playTogether(scaleX, scaleY)
         bounceSet.duration = 800
         bounceSet.interpolator = AccelerateDecelerateInterpolator()
-        bounceSet.repeatCount = ObjectAnimator.INFINITE
         bounceSet.start()
     }
 
-    private fun setupListeners(today: Int) {
+    private fun setupListeners() {
         binding.btnPlay.setOnClickListener {
             if (!NetworkManager.isInternetAvailable(this)) {
                 Toast.makeText(this, "Connexion internet requise!", Toast.LENGTH_SHORT).show()
@@ -130,7 +125,9 @@ class HomeActivity : AppCompatActivity() {
         binding.btnWithdraw.setOnClickListener { checkWithdrawal() }
         binding.btnReward.setOnClickListener { showGiftPopup() }
 
-        // Bouton quotidien déjà géré dans onCreate avec `today`
+        // Calculer le jour actuel pour le calendrier quotidien
+        val todayIndex = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) + 5) % 7
+        binding.btnDailyReward.setOnClickListener { showDailyPopup(todayIndex) }
     }
 
     private fun updateUI() {
