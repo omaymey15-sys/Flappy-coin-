@@ -7,11 +7,13 @@ import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import android.animation.*
 import com.example.flappycoin.R
 import com.example.flappycoin.databinding.ActivityHomeBinding
 import com.example.flappycoin.managers.CurrencyManager
@@ -46,7 +48,19 @@ class HomeActivity : AppCompatActivity() {
             }
         }
 
-        setupListeners()
+        // 🔹 Animations boutons cadeau et quotidien
+        animateButtonBounceGlow(binding.btnReward)
+        animateButtonBounceGlow(binding.btnDailyReward)
+
+        // Calculer le jour actuel pour le calendrier quotidien
+        val todayIndex = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
+
+        // Clic sur bouton quotidien
+        binding.btnDailyReward.setOnClickListener {
+            showDailyPopup(todayIndex)
+        }
+
+        setupListeners(todayIndex)
         updateUI()
 
         // Charger pub interstitielle et récompensée
@@ -54,7 +68,31 @@ class HomeActivity : AppCompatActivity() {
         AdHelper.loadRewardedAd(this)
     }
 
-    private fun setupListeners() {
+    // 🔹 Animation bounce + glow
+    private fun animateButtonBounceGlow(button: Button) {
+        val scaleX = ObjectAnimator.ofFloat(button, "scaleX", 1f, 1.2f, 1f)
+        val scaleY = ObjectAnimator.ofFloat(button, "scaleY", 1f, 1.2f, 1f)
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            button.elevation = 10f
+            val glowAnimator = ValueAnimator.ofArgb(0x00000000, 0xFFFFFF00.toInt(), 0x00000000)
+            glowAnimator.addUpdateListener { animator ->
+                button.setShadowLayer(15f, 0f, 0f, animator.animatedValue as Int)
+            }
+            glowAnimator.duration = 1200
+            glowAnimator.repeatCount = ValueAnimator.INFINITE
+            glowAnimator.start()
+        }
+
+        val bounceSet = AnimatorSet()
+        bounceSet.playTogether(scaleX, scaleY)
+        bounceSet.duration = 800
+        bounceSet.interpolator = AccelerateDecelerateInterpolator()
+        bounceSet.repeatCount = ObjectAnimator.INFINITE
+        bounceSet.start()
+    }
+
+    private fun setupListeners(today: Int) {
         binding.btnPlay.setOnClickListener {
             if (!NetworkManager.isInternetAvailable(this)) {
                 Toast.makeText(this, "Connexion internet requise!", Toast.LENGTH_SHORT).show()
@@ -91,10 +129,8 @@ class HomeActivity : AppCompatActivity() {
 
         binding.btnWithdraw.setOnClickListener { checkWithdrawal() }
         binding.btnReward.setOnClickListener { showGiftPopup() }
-        binding.btnDailyReward.setOnClickListener {
-            val todayIndex = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
-            showDailyPopup(todayIndex)
-        }
+
+        // Bouton quotidien déjà géré dans onCreate avec `today`
     }
 
     private fun updateUI() {
@@ -142,6 +178,7 @@ class HomeActivity : AppCompatActivity() {
                 shareIntent.putExtra(Intent.EXTRA_TEXT, "Viens jouer à FlappyCoin ! https://fake.link/share")
                 startActivity(Intent.createChooser(shareIntent, "Partager avec..."))
 
+                it.isEnabled = false
                 handler.postDelayed({
                     GamePreferences.addCoins(10)
                     GamePreferences.recordShare()
@@ -160,6 +197,7 @@ class HomeActivity : AppCompatActivity() {
                 inviteIntent.putExtra(Intent.EXTRA_TEXT, "Invitez un ami à FlappyCoin ! https://fake.link/invite")
                 startActivity(Intent.createChooser(inviteIntent, "Inviter un ami"))
 
+                it.isEnabled = false
                 handler.postDelayed({
                     GamePreferences.addCoins(10) // 10 coins pour l'invitation
                     GamePreferences.recordInvite()
