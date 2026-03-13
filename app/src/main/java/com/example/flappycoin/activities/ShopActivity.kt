@@ -32,7 +32,7 @@ class ShopActivity : AppCompatActivity() {
             binding = ActivityShopBinding.inflate(layoutInflater)
             setContentView(binding.root)
 
-            // 🔹 Mise à jour solde
+            // 🔹 Mise à jour solde initial
             updateBalance()
 
             // 🔹 Liste des items du shop
@@ -68,7 +68,14 @@ class ShopActivity : AppCompatActivity() {
             AdHelper.loadRewardedAd(this)
             binding.root.postDelayed({
                 AdHelper.showRewardedAd(this) { reward ->
-                    Toast.makeText(this, "Vous avez gagné ${reward.amount} ${reward.type}!", Toast.LENGTH_SHORT).show()
+                    // ✅ Ajout de la récompense au solde
+                    GamePreferences.addCoins(reward.amount)
+                    updateBalance()
+                    Toast.makeText(
+                        this,
+                        "Vous avez gagné ${reward.amount} ${reward.type}!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }, 500)
 
@@ -76,7 +83,14 @@ class ShopActivity : AppCompatActivity() {
             rewardRunnable = object : Runnable {
                 override fun run() {
                     AdHelper.showRewardedAd(this@ShopActivity) { reward ->
-                        Toast.makeText(this@ShopActivity, "Vous avez gagné ${reward.amount} ${reward.type}!", Toast.LENGTH_SHORT).show()
+                        // ✅ Ajout de la récompense au solde
+                        GamePreferences.addCoins(reward.amount)
+                        updateBalance()
+                        Toast.makeText(
+                            this@ShopActivity,
+                            "Vous avez gagné ${reward.amount} ${reward.type}!",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     handler.postDelayed(this, 5 * 60 * 1000) // toutes les 5 minutes
                 }
@@ -85,7 +99,11 @@ class ShopActivity : AppCompatActivity() {
 
         } catch (e: Exception) {
             Log.e(TAG, "Exception dans onCreate", e)
-            Toast.makeText(this, "⚠️ ShopActivity crash\nType: ${e::class.simpleName}\nMessage: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "⚠️ ShopActivity crash\nType: ${e::class.simpleName}\nMessage: ${e.message}",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
