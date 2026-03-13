@@ -24,7 +24,7 @@ object AdHelper {
         val adRequest = AdRequest.Builder().build()
         InterstitialAd.load(
             activity,
-            "ca-app-pub-3940256099942544/1033173712", // test ad unit
+            "ca-app-pub-1299408509965704/5246862599", // test ad unit
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
