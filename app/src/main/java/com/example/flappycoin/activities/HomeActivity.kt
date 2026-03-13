@@ -1,6 +1,7 @@
 package com.example.flappycoin.activities
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -17,13 +18,14 @@ import com.example.flappycoin.managers.CurrencyManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.managers.SoundManager
 import com.example.flappycoin.utils.Constants
-import com.example.flappycoin.utils.LanguageManager
 import com.example.flappycoin.utils.NetworkManager
-import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.rewarded.RewardItem
 import com.google.android.gms.ads.rewarded.RewardedAd
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.google.android.gms.ads.rewarded.RewardedAdCallback
+import java.util.*
 
 class HomeActivity : AppCompatActivity() {
 
@@ -37,19 +39,38 @@ class HomeActivity : AppCompatActivity() {
 
         // 🔹 Initialisation AdMob
         MobileAds.initialize(this) {}
+        loadRewardedAd()
+
         val adRequest = AdRequest.Builder().build()
         binding.adView.loadAd(adRequest)
-        binding.adView.adListener = object : AdListener() {
-            override fun onAdLoaded() {}
-            override fun onAdFailedToLoad(adError: LoadAdError) { Log.e("HomeActivity", adError.message) }
-        }
 
-        // 🔹 Animations des boutons cadeaux
+        // 🔹 Animation des boutons 🎁📆
+        binding.btnReward.text = "🎁"
+        binding.btnDailyReward.text = "📆"
         binding.btnReward.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_in_out1))
         binding.btnDailyReward.startAnimation(AnimationUtils.loadAnimation(this, R.anim.zoom_in_out2))
 
         setupListeners()
         updateUI()
+    }
+
+    private fun loadRewardedAd() {
+        RewardedAd.load(
+            this,
+            Constants.REWARDED_AD_UNIT_ID,
+            AdRequest.Builder().build(),
+            object : RewardedAdLoadCallback() {
+                override fun onAdLoaded(ad: RewardedAd) {
+                    rewardedAd = ad
+                    Log.d("HomeActivity", "Rewarded Ad loaded")
+                }
+
+                override fun onAdFailedToLoad(error: com.google.android.gms.ads.LoadAdError) {
+                    Log.e("HomeActivity", "Rewarded Ad failed: ${error.message}")
+                    rewardedAd = null
+                }
+            }
+        )
     }
 
     private fun setupListeners() {
@@ -62,33 +83,35 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, GameActivity::class.java))
         }
 
-        binding.btnShop.setOnClickListener {
+        binding.btnShop.setOnClickListener { 
             SoundManager.playTap()
             startActivity(Intent(this, ShopActivity::class.java))
         }
 
-        binding.btnStats.setOnClickListener {
+        binding.btnStats.setOnClickListener { 
             SoundManager.playTap()
             startActivity(Intent(this, StatsActivity::class.java))
         }
 
-        binding.btnLeaderboard.setOnClickListener {
+        binding.btnLeaderboard.setOnClickListener { 
             SoundManager.playTap()
             startActivity(Intent(this, LeaderboardActivity::class.java))
         }
 
-        binding.btnHelp.setOnClickListener {
+        binding.btnHelp.setOnClickListener { 
             SoundManager.playTap()
             startActivity(Intent(this, HelpActivity::class.java))
         }
 
-        binding.btnSettings.setOnClickListener {
+        binding.btnSettings.setOnClickListener { 
             SoundManager.playTap()
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
         binding.btnWithdraw.setOnClickListener { checkWithdrawal() }
+
         binding.btnReward.setOnClickListener { showGiftPopup() }
+
         binding.btnDailyReward.setOnClickListener { showDailyPopup() }
     }
 
@@ -104,7 +127,6 @@ class HomeActivity : AppCompatActivity() {
         binding.tvBestScore.text = "Best: $bestScore"
     }
 
-    // --- Vérification retrait ---
     private fun checkWithdrawal() {
         val totalCoins = GamePreferences.getTotalCoins()
         if (totalCoins < Constants.MINIMUM_WITHDRAWAL_COINS.toInt()) {
@@ -115,150 +137,114 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    // --- Popup cadeau (Partager / Inviter / Regarder pub) ---
+    // --- 🎁 Popup cadeau ---
     private fun showGiftPopup() {
         val popupView = LayoutInflater.from(this).inflate(R.layout.popup_gift, null)
         val popupWindow = PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
         popupWindow.elevation = 10f
 
-        // 🔹 Partager (2 fois/jour)
-        popupView.findViewById<Button>(R.id.btnShare).setOnClickListener { handleShare() }
+        // Partage réel (max 2x/jour)
+        popupView.findViewById<Button>(R.id.btnShare).setOnClickListener {
+            val today = Calendar.getInstance().timeInMillis
+            val lastShare = GamePreferences.getLastShareTime()
+            val shareCount = GamePreferences.getShareCount()
+            if (!isSameDay(today, lastShare)) GamePreferences.resetShareCount()
 
-        // 🔹 Inviter un ami (1 fois/jour)
-        popupView.findViewById<Button>(R.id.btnInvite).setOnClickListener { handleInvite() }
+            if (shareCount >= 2) {
+                Toast.makeText(this, "Vous avez déjà partagé 2 fois aujourd'hui", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-        // 🔹 Regarder pub récompensée réelle
-        popupView.findViewById<Button>(R.id.btnWatch).setOnClickListener { showRewardedAd() }
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Viens jouer à FlappyCoin ! Lien: https://fake.link/share")
+            startActivity(Intent.createChooser(shareIntent, "Partager via"))
+
+            GamePreferences.incrementShareCount()
+            GamePreferences.setLastShareTime(today)
+            GamePreferences.addCoins(Constants.SHARE_REWARD)
+            Toast.makeText(this, "+${Constants.SHARE_REWARD} coins !", Toast.LENGTH_SHORT).show()
+            popupWindow.dismiss()
+            updateUI()
+        }
+
+        // Invitation réel (max 1x/jour)
+        popupView.findViewById<Button>(R.id.btnInvite).setOnClickListener {
+            val today = Calendar.getInstance().timeInMillis
+            val lastInvite = GamePreferences.getLastInviteTime()
+            if (isSameDay(today, lastInvite)) {
+                Toast.makeText(this, "Vous avez déjà invité un ami aujourd'hui", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val inviteIntent = Intent(Intent.ACTION_SEND)
+            inviteIntent.type = "text/plain"
+            inviteIntent.putExtra(Intent.EXTRA_TEXT, "Rejoins-moi sur FlappyCoin ! Lien: https://fake.link/invite")
+            startActivity(Intent.createChooser(inviteIntent, "Inviter un ami via"))
+
+            GamePreferences.setLastInviteTime(today)
+            GamePreferences.addCoins(10) // 10 coins pour inviter
+            Toast.makeText(this, "+10 coins !", Toast.LENGTH_SHORT).show()
+            popupWindow.dismiss()
+            updateUI()
+        }
+
+        // Pub récompensée réelle
+        popupView.findViewById<Button>(R.id.btnWatch).setOnClickListener {
+            val now = System.currentTimeMillis()
+            val lastAd = GamePreferences.getLastRewardedAdTime()
+            if (now - lastAd < Constants.REWARDED_AD_INTERVAL_MS) {
+                Toast.makeText(this, "Attendez ${ (Constants.REWARDED_AD_INTERVAL_MS - (now-lastAd))/1000 } secondes avant de regarder une autre pub", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            rewardedAd?.let { ad ->
+                ad.show(this, object : RewardedAdCallback() {
+                    override fun onUserEarnedReward(reward: RewardItem) {
+                        GamePreferences.addCoins(reward.amount)
+                        Toast.makeText(this@HomeActivity, "+${reward.amount} coins !", Toast.LENGTH_SHORT).show()
+                        updateUI()
+                    }
+
+                    override fun onAdClosed() {
+                        loadRewardedAd()
+                    }
+                })
+                GamePreferences.setLastRewardedAdTime(now)
+            } ?: run {
+                Toast.makeText(this, "Pub non chargée", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
     }
 
-    // --- Popup calendrier quotidien ---
+    // --- 📆 Popup calendrier quotidien ---
     private fun showDailyPopup() {
-        val prefs = getSharedPreferences("FlappyCoin", MODE_PRIVATE)
+        val today = Calendar.getInstance().timeInMillis
+        val lastDaily = GamePreferences.getLastDailyReward()
+        if (isSameDay(today, lastDaily)) {
+            Toast.makeText(this, "Vous avez déjà récupéré la récompense d'aujourd'hui", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val popupView = LayoutInflater.from(this).inflate(R.layout.popup_daily, null)
         val popupWindow = PopupWindow(popupView, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
         popupWindow.elevation = 10f
 
-        val today = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date())
-        val lastClaim = prefs.getString(Constants.PrefsKeys.LAST_DAILY_REWARD, "") ?: ""
-        if (today == lastClaim) {
-            Toast.makeText(this, "Vous avez déjà récupéré la récompense du jour !", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val days = listOf(
-            popupView.findViewById<Button>(R.id.day1),
-            popupView.findViewById<Button>(R.id.day2),
-            popupView.findViewById<Button>(R.id.day3),
-            popupView.findViewById<Button>(R.id.day4),
-            popupView.findViewById<Button>(R.id.day5),
-            popupView.findViewById<Button>(R.id.day6),
-            popupView.findViewById<Button>(R.id.day7)
-        )
-        val coinsWeek = listOf(10, 10, 10, 10, 10, 20, 20)
-        val todayIndex = (java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 5) % 7
-
-        days.forEachIndexed { index, button ->
-            button.isEnabled = index == todayIndex
-            if (index == todayIndex) {
-                button.setOnClickListener {
-                    GamePreferences.addCoins(coinsWeek[index])
-                    Toast.makeText(this, "+${coinsWeek[index]} coins !", Toast.LENGTH_SHORT).show()
-                    button.isEnabled = false
-                    popupWindow.dismiss()
-                    prefs.edit().putString(Constants.PrefsKeys.LAST_DAILY_REWARD, today).apply()
-                    updateUI()
-                }
-            }
-        }
-
-        popupWindow.showAtLocation(binding.root, Gravity.CENTER, 0, 0)
+        // Récompense quotidienne
+        val coinsToday = if (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) in listOf(Calendar.SATURDAY, Calendar.SUNDAY)) Constants.DAILY_REWARD_WEEKEND else Constants.DAILY_REWARD_WEEKDAY
+        GamePreferences.addCoins(coinsToday)
+        GamePreferences.setLastDailyReward(today)
+        Toast.makeText(this, "+$coinsToday coins pour la récompense quotidienne !", Toast.LENGTH_SHORT).show()
+        updateUI()
+        popupWindow.dismiss()
     }
 
-    // --- Gérer partage ---
-    private fun handleShare() {
-        val prefs = getSharedPreferences("FlappyCoin", MODE_PRIVATE)
-        val today = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date())
-        var shareCount = prefs.getInt(Constants.PrefsKeys.SHARE_COUNT + today, 0)
-
-        if (shareCount >= 2) {
-            Toast.makeText(this, "Vous avez déjà partagé 2 fois aujourd'hui !", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val shareMessage = "Regardez ce jeu incroyable FlappyCoin ! https://faux.lien/partage"
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, shareMessage)
-            type = "text/plain"
-        }
-        startActivity(Intent.createChooser(intent, "Partager avec"))
-
-        binding.root.postDelayed({
-            GamePreferences.addCoins(Constants.SHARE_REWARD)
-            Toast.makeText(this, "+${Constants.SHARE_REWARD} coins pour le partage !", Toast.LENGTH_SHORT).show()
-            shareCount++
-            prefs.edit().putInt(Constants.PrefsKeys.SHARE_COUNT + today, shareCount).apply()
-            updateUI()
-        }, 5000)
-    }
-
-    // --- Gérer invitation ---
-    private fun handleInvite() {
-        val prefs = getSharedPreferences("FlappyCoin", MODE_PRIVATE)
-        val today = java.text.SimpleDateFormat("yyyyMMdd", java.util.Locale.getDefault()).format(java.util.Date())
-        val inviteCount = prefs.getInt(Constants.PrefsKeys.INVITE_COUNT + today, 0)
-
-        if (inviteCount >= 1) {
-            Toast.makeText(this, "Vous avez déjà invité un ami aujourd'hui !", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val inviteMessage = "Rejoignez-moi sur FlappyCoin ! https://faux.lien/invite"
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, inviteMessage)
-            type = "text/plain"
-        }
-        startActivity(Intent.createChooser(intent, "Inviter un ami"))
-
-        binding.root.postDelayed({
-            GamePreferences.addCoins(Constants.INVITE_REWARD)
-            Toast.makeText(this, "+${Constants.INVITE_REWARD} coins pour l'invitation !", Toast.LENGTH_SHORT).show()
-            prefs.edit().putInt(Constants.PrefsKeys.INVITE_COUNT + today, inviteCount + 1).apply()
-            updateUI()
-        }, 5000)
-    }
-
-    // --- Pub récompensée réelle ---
-    private fun showRewardedAd() {
-        val prefs = getSharedPreferences("FlappyCoin", MODE_PRIVATE)
-        val lastTime = prefs.getLong(Constants.PrefsKeys.LAST_REWARDED_AD_TIME, 0)
-        val now = System.currentTimeMillis()
-
-        if (now - lastTime < Constants.REWARDED_AD_INTERVAL_MS) {
-            val remaining = (Constants.REWARDED_AD_INTERVAL_MS - (now - lastTime)) / 1000
-            Toast.makeText(this, "Veuillez attendre $remaining secondes avant la prochaine pub.", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val adRequest = com.google.android.gms.ads.AdRequest.Builder().build()
-        rewardedAd = RewardedAd(this, Constants.REWARDED_AD_UNIT_ID)
-        rewardedAd?.loadAd(adRequest, object : com.google.android.gms.ads.rewarded.RewardedAdLoadCallback() {
-            override fun onAdLoaded() {
-                rewardedAd?.show(this@HomeActivity) { rewardItem ->
-                    GamePreferences.addCoins(Constants.REWARDED_AD_BONUS)
-                    Toast.makeText(this@HomeActivity, "+${Constants.REWARDED_AD_BONUS} coins !", Toast.LENGTH_SHORT).show()
-                    prefs.edit().putLong(Constants.PrefsKeys.LAST_REWARDED_AD_TIME, now).apply()
-                    updateUI()
-                }
-            }
-
-            override fun onAdFailedToLoad(error: com.google.android.gms.ads.LoadAdError) {
-                Toast.makeText(this@HomeActivity, "Échec du chargement de la pub", Toast.LENGTH_SHORT).show()
-            }
-        })
+    private fun isSameDay(time1: Long, time2: Long): Boolean {
+        val cal1 = Calendar.getInstance().apply { timeInMillis = time1 }
+        val cal2 = Calendar.getInstance().apply { timeInMillis = time2 }
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) && cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
     }
 
     override fun onResume() {
