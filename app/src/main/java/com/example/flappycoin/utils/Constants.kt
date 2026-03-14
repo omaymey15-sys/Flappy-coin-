@@ -20,10 +20,10 @@ object Constants {
     const val INTERSTITIAL_SHOW_RATE = 0.35f
 
     // IDs AdMob TEST
-    const val ADMOB_APP_ID = "ca-app-pub-1299408509965704~5438288491"
-    const val BANNER_AD_UNIT_ID = "ca-app-pub-1299408509965704/5960673880"
-    const val INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-1299408509965704/5246862599"
-    const val REWARDED_AD_UNIT_ID = "ca-app-pub-1299408509965704/5901468710"
+    const val ADMOB_APP_ID = "ca-app-pub-3940256099942544~3347511713"
+    const val BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+    const val INTERSTITIAL_AD_UNIT_ID = "ca-app-pub-3940256099942544/1033173712"
+    const val REWARDED_AD_UNIT_ID = "ca-app-pub-3940256099942544/5224354917"
 
     // ============= GAMEPLAY =============
 
