@@ -25,9 +25,9 @@ class GameActivity : AppCompatActivity() {
     private lateinit var gameView: GameView
     private var adView: AdView? = null
     
-    // Utilisation de AtomicBoolean pour être sûr que c'est modifiable
-    private var isWaitingForAd = false
-    private var isBannerLoaded = false
+    // Variable renommée pour éviter tout conflit
+    private var adLoadingInProgress = false
+    private var bannerLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,20 +88,20 @@ class GameActivity : AppCompatActivity() {
         adView?.adListener = object : AdListener() {
             override fun onAdLoaded() {
                 // Bannière chargée avec succès → on l'affiche
-                isBannerLoaded = true
+                bannerLoaded = true
                 adView?.visibility = View.VISIBLE
                 println("✅ Bannière chargée et affichée")
             }
 
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 // Échec du chargement → on la cache
-                isBannerLoaded = false
+                bannerLoaded = false
                 adView?.visibility = View.GONE
                 println("❌ Bannière non disponible: ${adError.message}")
                 
                 // Réessayer plus tard
                 adView?.postDelayed({
-                    if (!isBannerLoaded && NetworkManager.isInternetAvailable(this@GameActivity)) {
+                    if (!bannerLoaded && NetworkManager.isInternetAvailable(this@GameActivity)) {
                         loadBannerAd(mainLayout)
                     }
                 }, 60000)
@@ -114,8 +114,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun onWatchAdClicked() {
-        // Vérification avec une variable locale pour éviter les problèmes de scope
-        if (isWaitingForAd) return
+        // Utilisation de la nouvelle variable
+        if (adLoadingInProgress) return
 
         if (!NetworkManager.isInternetAvailable(this)) {
             showNoInternetDialog()
@@ -128,19 +128,14 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        // Utilisation d'une fonction pour modifier isWaitingForAd
-        setWaitingForAd(true)
+        // ← Ligne 74 : Modification de adLoadingInProgress
+        adLoadingInProgress = true
 
         AdManager.showRewardedAd(this) {
-            setWaitingForAd(false)
+            adLoadingInProgress = false
             Toast.makeText(this@GameActivity, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
             gameView.revive()
         }
-    }
-
-    // Fonction dédiée pour modifier isWaitingForAd
-    private fun setWaitingForAd(value: Boolean) {
-        isWaitingForAd = value
     }
 
     private fun showNoInternetDialog() {
@@ -195,9 +190,9 @@ class GameActivity : AppCompatActivity() {
         super.onResume()
         gameView.resume()
         adView?.resume()
-        setWaitingForAd(false)
+        adLoadingInProgress = false
         
-        if (!isBannerLoaded && NetworkManager.isInternetAvailable(this)) {
+        if (!bannerLoaded && NetworkManager.isInternetAvailable(this)) {
             adView?.loadAd(AdRequest.Builder().build())
         }
     }
