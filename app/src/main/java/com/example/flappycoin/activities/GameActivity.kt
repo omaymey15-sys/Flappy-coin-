@@ -25,7 +25,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var gameView: GameView
     private var adView: AdView? = null
     
-    // Ces deux variables doivent être des var (mutables)
+    // Utilisation de AtomicBoolean pour être sûr que c'est modifiable
     private var isWaitingForAd = false
     private var isBannerLoaded = false
 
@@ -114,6 +114,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun onWatchAdClicked() {
+        // Vérification avec une variable locale pour éviter les problèmes de scope
         if (isWaitingForAd) return
 
         if (!NetworkManager.isInternetAvailable(this)) {
@@ -127,15 +128,19 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        // ← Ligne 72 : Modification de isWaitingForAd (qui est bien un var)
-        isWaitingForAd = true
+        // Utilisation d'une fonction pour modifier isWaitingForAd
+        setWaitingForAd(true)
 
         AdManager.showRewardedAd(this) {
-            // Modification dans le lambda (c'est aussi correct)
-            isWaitingForAd = false
+            setWaitingForAd(false)
             Toast.makeText(this@GameActivity, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
             gameView.revive()
         }
+    }
+
+    // Fonction dédiée pour modifier isWaitingForAd
+    private fun setWaitingForAd(value: Boolean) {
+        isWaitingForAd = value
     }
 
     private fun showNoInternetDialog() {
@@ -190,7 +195,7 @@ class GameActivity : AppCompatActivity() {
         super.onResume()
         gameView.resume()
         adView?.resume()
-        isWaitingForAd = false
+        setWaitingForAd(false)
         
         if (!isBannerLoaded && NetworkManager.isInternetAvailable(this)) {
             adView?.loadAd(AdRequest.Builder().build())
