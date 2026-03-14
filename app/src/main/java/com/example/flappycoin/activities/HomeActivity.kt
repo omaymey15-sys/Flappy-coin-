@@ -98,7 +98,7 @@ class HomeActivity : AppCompatActivity() {
             val needed = Constants.MINIMUM_WITHDRAWAL_COINS.toInt() - totalCoins
             Toast.makeText(this, "${LanguageManager.getString("minimum_withdrawal")}\nManque: $needed coins", Toast.LENGTH_LONG).show()
         } else {
-            Toast.makeText(this, "Retrait simulé", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "veillé payer tous les contenus de la boutique pour enfin procédé àux retrait", Toast.LENGTH_SHORT).show()
         }
     }
 
