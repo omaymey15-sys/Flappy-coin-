@@ -13,11 +13,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:background="#2a2a3e"
         android:gravity="center_vertical"
         android:layout_margin="8dp"
-        android:outlineProvider="background"
-        android:background="@drawable/white_border_background">
+        android:background="@drawable/white_border_background">  <!-- ← Un seul background ici ! -->
 
         <TextView
             android:id="@+id/tvBalance"
@@ -54,10 +52,9 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:background="#2a2a3e"
         android:layout_margin="8dp"
         android:gravity="center_vertical"
-        android:background="@drawable/white_border_background">
+        android:background="@drawable/white_border_background">  <!-- ← Un seul background ici ! -->
 
         <TextView
             android:id="@+id/tvUsername"
