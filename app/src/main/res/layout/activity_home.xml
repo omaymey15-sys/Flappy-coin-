@@ -7,15 +7,14 @@
     android:background="#1a1a2e"
     android:padding="0dp">
 
-    <!-- Header avec contour blanc -->
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:gravity="center_vertical"
-        android:layout_margin="8dp"
-        android:background="@drawable/white_border_background">  <!-- ← Un seul background ici ! -->
+        android:background="#2a2a3e"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/tvBalance"
@@ -41,20 +40,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Retirer"
-            android:backgroundTint="#4CAF50"
-            android:textColor="@android:color/white"
-            style="@style/WhiteBorderButton" />
+            android:background="#4CAF50"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
-    <!-- Infos utilisateur avec contour blanc -->
+    <!-- Infos utilisateur -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="12dp"
-        android:layout_margin="8dp"
-        android:gravity="center_vertical"
-        android:background="@drawable/white_border_background">  <!-- ← Un seul background ici ! -->
+        android:background="#2a2a3e"
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical">
 
         <TextView
             android:id="@+id/tvUsername"
@@ -94,10 +92,9 @@
                 android:text="▶️ JOUER"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:backgroundTint="#FF6B6B"
+                android:background="#FF6B6B"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"
-                style="@style/WhiteBorderButton" />
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnShop"
@@ -106,10 +103,9 @@
                 android:text="🛍️ BOUTIQUE"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:backgroundTint="#4169E1"
+                android:background="#4169E1"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"
-                style="@style/WhiteBorderButton" />
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnStats"
@@ -118,10 +114,9 @@
                 android:text="📊 STATISTIQUES"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:backgroundTint="#FF8C00"
+                android:background="#FF8C00"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"
-                style="@style/WhiteBorderButton" />
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnLeaderboard"
@@ -130,10 +125,9 @@
                 android:text="🏆 CLASSEMENT"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:backgroundTint="#9370DB"
+                android:background="#9370DB"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"
-                style="@style/WhiteBorderButton" />
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnHelp"
@@ -142,10 +136,9 @@
                 android:text="❓ AIDE"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:backgroundTint="#20B2AA"
+                android:background="#20B2AA"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"
-                style="@style/WhiteBorderButton" />
+                android:layout_marginBottom="10dp" />
 
             <Button
                 android:id="@+id/btnSettings"
@@ -154,19 +147,17 @@
                 android:text="⚙️ PARAMÈTRES"
                 android:textSize="20sp"
                 android:textStyle="bold"
-                android:backgroundTint="#696969"
+                android:background="#696969"
                 android:textColor="@android:color/white"
-                android:layout_marginBottom="10dp"
-                style="@style/WhiteBorderButton" />
+                android:layout_marginBottom="10dp" />
 
-            <!-- Boutons emoji horizontaux avec contours blancs -->
+            <!-- Boutons emoji horizontaux -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
                 android:weightSum="2">
 
                 <Button
@@ -177,8 +168,7 @@
                     android:text="🎁"
                     android:textSize="32sp"
                     android:layout_marginEnd="8dp"
-                    android:backgroundTint="#FFDF00"
-                    style="@style/WhiteBorderButton" />
+                    android:background="#FFDF00" />
 
                 <Button
                     android:id="@+id/btnDailyReward"
@@ -188,28 +178,20 @@
                     android:text="📆"
                     android:textSize="32sp"
                     android:layout_marginStart="8dp"
-                    android:backgroundTint="#00CED1"
-                    style="@style/WhiteBorderButton" />
+                    android:background="#00CED1" />
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bannière AdMob avec contour blanc -->
-    <LinearLayout
+    <!-- Bannière AdMob -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/white_border_background"
-        android:gravity="center">
-
-        <com.google.android.gms.ads.AdView
-            android:id="@+id/adView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            ads:adSize="BANNER"
-            ads:adUnitId="ca-app-pub-1299408509965704/5960673880" />
-    </LinearLayout>
+        android:layout_gravity="center"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-1299408509965704/5960673880" />
 
 </LinearLayout>
+ajouter les contours blanc a chaque activité 
