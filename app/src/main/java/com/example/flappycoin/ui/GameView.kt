@@ -624,6 +624,7 @@ class GameView(
             onGameOver(score, coinsCount, distance / 10, elapsedTimeMs)
         }
     }
+    }
     
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
