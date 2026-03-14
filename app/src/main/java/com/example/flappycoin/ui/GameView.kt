@@ -610,18 +610,21 @@ class GameView(
     }
 
     private fun triggerGameOver() {
-        if (currentState != GameState.GAME_OVER) {
-            currentState = GameState.GAME_OVER
-            gameOverTime = System.currentTimeMillis()
-            triggerShake()
-            soundPool.play(sHit, 1f, 1f, 0, 0, 1f)
-            soundPool.play(sDie, 1f, 1f, 0, 0, 1f)
+    if (currentState != GameState.GAME_OVER) {
 
-            // Callback avec stats
+        currentState = GameState.GAME_OVER
+        gameOverTime = System.currentTimeMillis()
+
+        triggerShake()
+
+        soundPool.play(sHit, 1f, 1f, 0, 0, 1f)
+        soundPool.play(sDie, 1f, 1f, 0, 0, 1f)
+
+        post {
             onGameOver(score, coinsCount, distance / 10, elapsedTimeMs)
         }
     }
-
+    
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (event.action == MotionEvent.ACTION_DOWN) {
             when (currentState) {
