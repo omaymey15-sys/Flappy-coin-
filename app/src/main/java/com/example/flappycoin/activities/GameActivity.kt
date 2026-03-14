@@ -24,7 +24,9 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
     private var adView: AdView? = null
-    private var isWaitingForAd = false  // ← C'est bien un var (modifiable)
+    
+    // Ces deux variables doivent être des var (mutables)
+    private var isWaitingForAd = false
     private var isBannerLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +52,7 @@ class GameActivity : AppCompatActivity() {
             }
         )
 
-        // Paramètres de layout pour la vue du jeu (prend tout l'espace)
+        // Paramètres de layout pour la vue du jeu
         val gameLayoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -102,7 +104,7 @@ class GameActivity : AppCompatActivity() {
                     if (!isBannerLoaded && NetworkManager.isInternetAvailable(this@GameActivity)) {
                         loadBannerAd(mainLayout)
                     }
-                }, 60000) // Réessayer dans 60 secondes
+                }, 60000)
             }
         }
 
@@ -125,11 +127,13 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        isWaitingForAd = true  // ← Ligne 72 - C'est correct, isWaitingForAd est var
+        // ← Ligne 72 : Modification de isWaitingForAd (qui est bien un var)
+        isWaitingForAd = true
 
         AdManager.showRewardedAd(this) {
-            isWaitingForAd = false  // ← Ça marche car c'est dans un lambda
-            Toast.makeText(this, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
+            // Modification dans le lambda (c'est aussi correct)
+            isWaitingForAd = false
+            Toast.makeText(this@GameActivity, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
             gameView.revive()
         }
     }
@@ -188,7 +192,6 @@ class GameActivity : AppCompatActivity() {
         adView?.resume()
         isWaitingForAd = false
         
-        // Vérifier si on doit recharger la bannière
         if (!isBannerLoaded && NetworkManager.isInternetAvailable(this)) {
             adView?.loadAd(AdRequest.Builder().build())
         }
