@@ -10,10 +10,6 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 
-/**
- * Gestion complète AdMob
- * Banner, Interstitiel, Récompensée
- */
 object AdManager {
     private var rewardedAd: RewardedAd? = null
     private var isLoadingRewarded = false
@@ -27,8 +23,6 @@ object AdManager {
         }
     }
 
-    // ============= PUBLICITÉ RÉCOMPENSÉE =============
-
     fun loadRewardedAd(context: Context) {
         if (isLoadingRewarded || rewardedAd != null) return
 
@@ -41,42 +35,33 @@ object AdManager {
             adRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.d("AdManager", "Pub récompensée échouée: ${adError.message}")
+                    Log.d("AdManager", "Pub échouée: ${adError.message}")
                     isLoadingRewarded = false
+                    rewardedAd = null
                 }
 
                 override fun onAdLoaded(ad: RewardedAd) {
                     rewardedAd = ad
                     isLoadingRewarded = false
-                    Log.d("AdManager", "Pub récompensée chargée")
+                    Log.d("AdManager", "Pub chargée")
                 }
             }
         )
     }
 
-    fun showRewardedAd(activity: Activity, callback: (Int) -> Unit) {
+    fun showRewardedAd(activity: Activity, callback: () -> Unit) {
         if (rewardedAd == null) {
-            Log.d("AdManager", "Pub récompensée non disponible")
-            return
-        }
-
-        if (!canShowRewardedAd()) {
-            Log.d("AdManager", "Intervalle minimum non atteint")
+            Log.d("AdManager", "Pub non disponible")
             return
         }
 
         rewardedAd?.show(activity) { rewardItem ->
-            val reward = Constants.REWARDED_AD_BONUS
-            callback(reward)
+            callback()
             GamePreferences.setLastRewardedAdTime(System.currentTimeMillis())
         }
+        
         rewardedAd = null
         loadRewardedAd(activity)
-    }
-
-    fun canShowRewardedAd(): Boolean {
-        val lastTime = GamePreferences.getLastRewardedAdTime()
-        return System.currentTimeMillis() - lastTime >= Constants.REWARDED_AD_INTERVAL_MS
     }
 
     fun isRewardedAdLoaded(): Boolean = rewardedAd != null
