@@ -66,7 +66,7 @@ object AdHelper {
         val adRequest = AdRequest.Builder().build()
         RewardedAd.load(
             activity,
-            "ca-app-pub-1299408509965704/5901468710", // test ad unit
+            "ca-app-pub-3940256099942544/5224354917", // test ad unit
             adRequest,
             object : RewardedAdLoadCallback() {
                 override fun onAdLoaded(ad: RewardedAd) {
