@@ -24,7 +24,7 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
     private var adView: AdView? = null
-    private var isWaitingForAd = false
+    private var isWaitingForAd = false  // ← C'est bien un var (modifiable)
     private var isBannerLoaded = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,10 +125,10 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        isWaitingForAd = true
+        isWaitingForAd = true  // ← Ligne 72 - C'est correct, isWaitingForAd est var
 
         AdManager.showRewardedAd(this) {
-            isWaitingForAd = false
+            isWaitingForAd = false  // ← Ça marche car c'est dans un lambda
             Toast.makeText(this, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
             gameView.revive()
         }
