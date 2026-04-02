@@ -9,58 +9,67 @@ import com.example.flappycoin.R
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.ui.GameView
-import com.example.flappycoin.utils.Constants
 import com.example.flappycoin.utils.NetworkManager
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 
 class GameActivity : AppCompatActivity() {
-    
+
     private lateinit var gameView: GameView
+    private lateinit var adView: AdView
     private var isWaitingForAd = false
-    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+        setContentView(R.layout.activity_game) // Ton layout XML
+
+        // Initialisation AdManager (Rewarded Ads)
         AdManager.init(this)
-        
-        gameView = GameView(
-            this,
-            { score, coins, distance, time ->
+
+        // Initialisation GameView
+        gameView = findViewById(R.id.gameView)
+
+        // Initialisation MobileAds pour la bannière
+        MobileAds.initialize(this)
+
+        adView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+
+        // Setup des callbacks de GameView
+        gameView.setCallbacks(
+            onGameOver = { score, coins, distance, time ->
                 onGameOver(score, coins, distance, time)
             },
-            {
-                onWatchAdClicked()
-            },
-            {
-                returnToMenu()
-            }
+            onWatchAdClicked = { onWatchAdClicked() },
+            onReturnToMenu = { returnToMenu() }
         )
-        
-        setContentView(gameView)
     }
-    
+
     private fun onWatchAdClicked() {
         if (isWaitingForAd) return
-        
+
         if (!NetworkManager.isInternetAvailable(this)) {
             showNoInternetDialog()
             return
         }
-        
+
         if (!AdManager.isRewardedAdLoaded()) {
             showAdNotReadyDialog()
             AdManager.loadRewardedAd(this)
             return
         }
-        
+
         isWaitingForAd = true
-        
+
         AdManager.showRewardedAd(this) {
             isWaitingForAd = false
             Toast.makeText(this, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
             gameView.revive()
         }
     }
-    
+
     private fun showNoInternetDialog() {
         AlertDialog.Builder(this)
             .setTitle("📶 Pas de connexion")
@@ -68,7 +77,7 @@ class GameActivity : AppCompatActivity() {
             .setPositiveButton("OK") { _, _ -> }
             .show()
     }
-    
+
     private fun showAdNotReadyDialog() {
         AlertDialog.Builder(this)
             .setTitle("📺 Publicité en chargement")
@@ -76,7 +85,7 @@ class GameActivity : AppCompatActivity() {
             .setPositiveButton("OK") { _, _ -> }
             .show()
     }
-    
+
     private fun onGameOver(score: Int, coins: Int, distance: Int, time: Long) {
         GamePreferences.apply {
             setBestScore(score)
@@ -86,28 +95,28 @@ class GameActivity : AppCompatActivity() {
             addTime(time)
             incrementGames()
         }
-        
+
         if (score > GamePreferences.getBestScore()) {
             Toast.makeText(this, "🏆 Nouveau record !", Toast.LENGTH_SHORT).show()
         }
-        
+
         if (!AdManager.isRewardedAdLoaded()) {
             AdManager.loadRewardedAd(this)
         }
     }
-    
+
     private fun returnToMenu() {
         val intent = Intent(this, HomeActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
         finish()
     }
-    
+
     override fun onPause() {
         super.onPause()
         gameView.pause()
     }
-    
+
     override fun onResume() {
         super.onResume()
         gameView.resume()
