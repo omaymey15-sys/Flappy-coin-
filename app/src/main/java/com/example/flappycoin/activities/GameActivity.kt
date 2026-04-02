@@ -22,7 +22,7 @@ class GameActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game) // Ton layout XML
+        setContentView(R.layout.activity_game) // XML layout
 
         // Initialisation AdManager (Rewarded Ads)
         AdManager.init(this)
@@ -30,14 +30,7 @@ class GameActivity : AppCompatActivity() {
         // Initialisation GameView
         gameView = findViewById(R.id.gameView)
 
-        // Initialisation MobileAds pour la bannière
-        MobileAds.initialize(this)
-
-        adView = findViewById(R.id.adView)
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
-
-        // Setup des callbacks de GameView
+        // Ajouter les callbacks pour GameView
         gameView.setCallbacks(
             onGameOver = { score, coins, distance, time ->
                 onGameOver(score, coins, distance, time)
@@ -45,6 +38,13 @@ class GameActivity : AppCompatActivity() {
             onWatchAdClicked = { onWatchAdClicked() },
             onReturnToMenu = { returnToMenu() }
         )
+
+        // Initialisation MobileAds pour la bannière
+        MobileAds.initialize(this)
+
+        adView = findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     private fun onWatchAdClicked() {
