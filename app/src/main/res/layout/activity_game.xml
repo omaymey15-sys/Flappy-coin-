@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!-- ✅ CONTENEUR POUR LE JEU (AJOUTÉ) -->
+    <!-- Conteneur pour le jeu (GameView s'affichera ici) -->
     <FrameLayout
         android:id="@+id/gameContainer"
         android:layout_width="match_parent"
