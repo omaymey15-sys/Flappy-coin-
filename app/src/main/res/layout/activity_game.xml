@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
-    <!-- GameView (SurfaceView) -->
-    <View
-        android:id="@+id/gameView"
+    <!-- ✅ CONTENEUR POUR LE JEU (AJOUTÉ) -->
+    <FrameLayout
+        android:id="@+id/gameContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -113,6 +113,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         ads:adSize="BANNER"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" /> <!-- ID test -->
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111" />
 
 </FrameLayout>
