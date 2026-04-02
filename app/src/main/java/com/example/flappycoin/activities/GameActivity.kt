@@ -1,107 +1,117 @@
-<?xml version="1.0" encoding="utf-8"?>  <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"  
-android:layout_width="match_parent"  
-android:layout_height="match_parent"  
-android:background="#000000">
+package com.example.flappycoin.activities
 
-<!-- GameView (SurfaceView) -->  
-<View  
-    android:id="@+id/gameView"  
-    android:layout_width="match_parent"  
-    android:layout_height="match_parent" />  
+import android.app.AlertDialog
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.flappycoin.R
+import com.example.flappycoin.managers.AdManager
+import com.example.flappycoin.managers.GamePreferences
+import com.example.flappycoin.ui.GameView
+import com.example.flappycoin.utils.Constants
+import com.example.flappycoin.utils.NetworkManager
 
-<!-- Stats en jeu (en haut) -->  
-<LinearLayout  
-    android:layout_width="match_parent"  
-    android:layout_height="80dp"  
-    android:orientation="horizontal"  
-    android:padding="12dp"  
-    android:gravity="center_vertical">  
+class GameActivity : AppCompatActivity() {
 
-    <!-- Gauche: Score -->  
-    <LinearLayout  
-        android:layout_width="0dp"  
-        android:layout_height="wrap_content"  
-        android:layout_weight="1"  
-        android:orientation="vertical"  
-        android:background="#2a2a3e"  
-        android:padding="8dp">  
+private lateinit var gameView: GameView  
+private var isWaitingForAd = false  
 
-        <TextView  
-            android:text="Score"  
-            android:textColor="#FFFFFF"  
-            android:textSize="12sp"  
-            android:layout_width="match_parent"  
-            android:layout_height="wrap_content" />  
+override fun onCreate(savedInstanceState: Bundle?) {  
+    super.onCreate(savedInstanceState)  
 
-        <TextView  
-            android:id="@+id/tvGameScore"  
-            android:text="0"  
-            android:textColor="#FFD700"  
-            android:textSize="24sp"  
-            android:textStyle="bold"  
-            android:layout_width="match_parent"  
-            android:layout_height="wrap_content" />  
+    AdManager.init(this)  
 
-    </LinearLayout>  
+    gameView = GameView(  
+        this,  
+        { score, coins, distance, time ->  
+            onGameOver(score, coins, distance, time)  
+        },  
+        {  
+            onWatchAdClicked()  
+        },  
+        {  
+            returnToMenu()  
+        }  
+    )  
 
-    <!-- Milieu: Distance & Temps -->  
-    <LinearLayout  
-        android:layout_width="0dp"  
-        android:layout_height="wrap_content"  
-        android:layout_weight="1"  
-        android:orientation="vertical"  
-        android:background="#2a2a3e"  
-        android:padding="8dp"  
-        android:layout_marginStart="8dp"  
-        android:layout_marginEnd="8dp">  
+    setContentView(gameView)  
+}  
 
-        <TextView  
-            android:id="@+id/tvDistance"  
-            android:text="0m"  
-            android:textColor="#FFFFFF"  
-            android:textSize="12sp"  
-            android:layout_width="match_parent"  
-            android:layout_height="wrap_content" />  
+private fun onWatchAdClicked() {  
+    if (isWaitingForAd) return  
 
-        <TextView  
-            android:id="@+id/tvTime"  
-            android:text="00:00"  
-            android:textColor="#FFFFFF"  
-            android:textSize="12sp"  
-            android:layout_width="match_parent"  
-            android:layout_height="wrap_content" />  
+    if (!NetworkManager.isInternetAvailable(this)) {  
+        showNoInternetDialog()  
+        return  
+    }  
 
-    </LinearLayout>  
+    if (!AdManager.isRewardedAdLoaded()) {  
+        showAdNotReadyDialog()  
+        AdManager.loadRewardedAd(this)  
+        return  
+    }  
 
-    <!-- Droite: Coins -->  
-    <LinearLayout  
-        android:layout_width="0dp"  
-        android:layout_height="wrap_content"  
-        android:layout_weight="1"  
-        android:orientation="vertical"  
-        android:background="#2a2a3e"  
-        android:padding="8dp"  
-        android:gravity="center">  
+    isWaitingForAd = true  
 
-        <TextView  
-            android:text="🪙"  
-            android:textSize="24sp"  
-            android:gravity="center"  
-            android:layout_width="match_parent"  
-            android:layout_height="wrap_content" />  
+    AdManager.showRewardedAd(this) {  
+        isWaitingForAd = false  
+        Toast.makeText(this, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()  
+        gameView.revive()  
+    }  
+}  
 
-        <TextView  
-            android:id="@+id/tvGameCoins"  
-            android:text="0"  
-            android:textColor="#FFD700"  
-            android:textSize="18sp"  
-            android:textStyle="bold"  
-            android:gravity="center"  
-            android:layout_width="match_parent"  
-            android:layout_height="wrap_content" />  
+private fun showNoInternetDialog() {  
+    AlertDialog.Builder(this)  
+        .setTitle("📶 Pas de connexion")  
+        .setMessage("Une connexion internet est requise pour regarder une publicité.")  
+        .setPositiveButton("OK") { _, _ -> }  
+        .show()  
+}  
 
-    </LinearLayout>  
+private fun showAdNotReadyDialog() {  
+    AlertDialog.Builder(this)  
+        .setTitle("📺 Publicité en chargement")  
+        .setMessage("La publicité n'est pas encore prête. Veuillez réessayer dans quelques instants.")  
+        .setPositiveButton("OK") { _, _ -> }  
+        .show()  
+}  
 
-</LinearLayout>
+private fun onGameOver(score: Int, coins: Int, distance: Int, time: Long) {  
+    GamePreferences.apply {  
+        setBestScore(score)  
+        setBestCoins(coins)  
+        addCoins(coins)  
+        addDistance(distance)  
+        addTime(time)  
+        incrementGames()  
+    }  
 
-</FrameLayout>
+    if (score > GamePreferences.getBestScore()) {  
+        Toast.makeText(this, "🏆 Nouveau record !", Toast.LENGTH_SHORT).show()  
+    }  
+
+    if (!AdManager.isRewardedAdLoaded()) {  
+        AdManager.loadRewardedAd(this)  
+    }  
+}  
+
+private fun returnToMenu() {  
+    val intent = Intent(this, HomeActivity::class.java)  
+    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP  
+    startActivity(intent)  
+    finish()  
+}  
+
+override fun onPause() {  
+    super.onPause()  
+    gameView.pause()  
+}  
+
+override fun onResume() {  
+    super.onResume()  
+    gameView.resume()  
+    isWaitingForAd = false  
+}
+
+}
