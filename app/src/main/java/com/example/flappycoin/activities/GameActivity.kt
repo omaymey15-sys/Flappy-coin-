@@ -70,7 +70,7 @@ class GameActivity : AppCompatActivity() {
     private fun loadBannerAd(mainLayout: FrameLayout) {
         // Créer la bannière publicitaire
         adView = AdView(this)
-        adView?.adUnitId = Constants.BANNER_AD_UNIT_ID
+        adView?.adUnitId = "ca-app-pub-3940256099942544/6300978111"
         adView?.adSize = AdSize.BANNER
         
         // Cachée par défaut
