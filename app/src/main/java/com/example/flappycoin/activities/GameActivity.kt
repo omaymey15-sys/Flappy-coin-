@@ -12,7 +12,6 @@ import com.example.flappycoin.R
 import com.example.flappycoin.managers.AdManager
 import com.example.flappycoin.managers.GamePreferences
 import com.example.flappycoin.ui.GameView
-import com.example.flappycoin.utils.Constants
 import com.example.flappycoin.utils.NetworkManager
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -24,8 +23,8 @@ class GameActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
     private var adView: AdView? = null
-    
-    // Variable renommée pour éviter tout conflit
+
+    // Variables mutables
     private var adLoadingInProgress = false
     private var bannerLoaded = false
 
@@ -68,37 +67,31 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun loadBannerAd(mainLayout: FrameLayout) {
-        // Créer la bannière publicitaire
-        adView = AdView(this)
-        adView?.adUnitId = "ca-app-pub-3940256099942544/6300978111"
-        adView?.adSize = AdSize.BANNER
-        
-        // Cachée par défaut
-        adView?.visibility = View.GONE
+        adView = AdView(this).apply {
+            adUnitId = "ca-app-pub-3940256099942544/6300978111"
+            adSize = AdSize.BANNER
+            visibility = View.GONE
+        }
 
-        // Ajouter au layout (en bas)
         val adLayoutParams = FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        adLayoutParams.gravity = android.view.Gravity.BOTTOM
+        ).apply {
+            gravity = android.view.Gravity.BOTTOM
+        }
         mainLayout.addView(adView, adLayoutParams)
 
-        // Listener pour savoir quand la bannière est chargée
         adView?.adListener = object : AdListener() {
             override fun onAdLoaded() {
-                // Bannière chargée avec succès → on l'affiche
                 bannerLoaded = true
                 adView?.visibility = View.VISIBLE
                 println("✅ Bannière chargée et affichée")
             }
 
             override fun onAdFailedToLoad(adError: LoadAdError) {
-                // Échec du chargement → on la cache
                 bannerLoaded = false
                 adView?.visibility = View.GONE
                 println("❌ Bannière non disponible: ${adError.message}")
-                
                 // Réessayer plus tard
                 adView?.postDelayed({
                     if (!bannerLoaded && NetworkManager.isInternetAvailable(this@GameActivity)) {
@@ -108,13 +101,10 @@ class GameActivity : AppCompatActivity() {
             }
         }
 
-        // Charger l'annonce
-        val adRequest = AdRequest.Builder().build()
-        adView?.loadAd(adRequest)
+        adView?.loadAd(AdRequest.Builder().build())
     }
 
     private fun onWatchAdClicked() {
-        // Utilisation de la nouvelle variable
         if (adLoadingInProgress) return
 
         if (!NetworkManager.isInternetAvailable(this)) {
@@ -128,7 +118,7 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        // ← Ligne 74 : Modification de adLoadingInProgress
+        // ✅ Ligne modifiée pour être mutable
         adLoadingInProgress = true
 
         AdManager.showRewardedAd(this) {
@@ -142,7 +132,7 @@ class GameActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("📶 Pas de connexion")
             .setMessage("Une connexion internet est requise pour regarder une publicité.")
-            .setPositiveButton("OK") { _, _ -> }
+            .setPositiveButton("OK", null)
             .show()
     }
 
@@ -150,7 +140,7 @@ class GameActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle("📺 Publicité en chargement")
             .setMessage("La publicité n'est pas encore prête. Veuillez réessayer dans quelques instants.")
-            .setPositiveButton("OK") { _, _ -> }
+            .setPositiveButton("OK", null)
             .show()
     }
 
@@ -191,7 +181,7 @@ class GameActivity : AppCompatActivity() {
         gameView.resume()
         adView?.resume()
         adLoadingInProgress = false
-        
+
         if (!bannerLoaded && NetworkManager.isInternetAvailable(this)) {
             adView?.loadAd(AdRequest.Builder().build())
         }
