@@ -3,6 +3,8 @@ package com.example.flappycoin.activities
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -25,9 +27,14 @@ class GameActivity : AppCompatActivity() {
     private lateinit var gameView: GameView
     private var adView: AdView? = null
     
-    // Variable renommée pour éviter tout conflit
-    private var adLoadingInProgress = false
+    // Variables séparées pour les différents types de publicités
+    private var rewardedAdLoading = false
+    private var bannerAdLoading = false
     private var bannerLoaded = false
+    
+    // Pour la gestion des tentatives de rechargement
+    private var retryHandler: Handler? = null
+    private var retryRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +66,10 @@ class GameActivity : AppCompatActivity() {
         )
         mainLayout.addView(gameView, gameLayoutParams)
 
+        // Ajouter un padding en bas pour la bannière
+        val bannerHeight = AdSize.BANNER.getHeightInPixels(this)
+        mainLayout.setPadding(0, 0, 0, bannerHeight)
+
         // Charger la bannière si la connexion est disponible
         if (NetworkManager.isInternetAvailable(this)) {
             loadBannerAd(mainLayout)
@@ -68,54 +79,76 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun loadBannerAd(mainLayout: FrameLayout) {
-        // Créer la bannière publicitaire
-        adView = AdView(this)
-        adView?.adUnitId = Constants.BANNER_AD_UNIT_ID
-        adView?.adSize = AdSize.BANNER
+        // Nettoyer les anciennes tentatives
+        retryRunnable?.let { retryHandler?.removeCallbacks(it) }
         
-        // Cachée par défaut
-        adView?.visibility = View.GONE
+        // Supprimer l'ancien adView s'il existe
+        adView?.let { mainLayout.removeView(it) }
+        
+        bannerAdLoading = true
 
-        // Ajouter au layout (en bas)
-        val adLayoutParams = FrameLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        adLayoutParams.gravity = android.view.Gravity.BOTTOM
-        mainLayout.addView(adView, adLayoutParams)
+        // Créer la bannière publicitaire
+        adView = AdView(this).apply {
+            adUnitId = Constants.BANNER_AD_UNIT_ID
+            adSize = AdSize.BANNER
+            
+            // Cachée par défaut
+            visibility = View.GONE
 
-        // Listener pour savoir quand la bannière est chargée
-        adView?.adListener = object : AdListener() {
-            override fun onAdLoaded() {
-                // Bannière chargée avec succès → on l'affiche
-                bannerLoaded = true
-                adView?.visibility = View.VISIBLE
-                println("✅ Bannière chargée et affichée")
-            }
+            // Listener pour savoir quand la bannière est chargée
+            adListener = object : AdListener() {
+                override fun onAdLoaded() {
+                    // Bannière chargée avec succès → on l'affiche
+                    bannerLoaded = true
+                    bannerAdLoading = false
+                    visibility = View.VISIBLE
+                    println("✅ Bannière chargée et affichée")
+                }
 
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                // Échec du chargement → on la cache
-                bannerLoaded = false
-                adView?.visibility = View.GONE
-                println("❌ Bannière non disponible: ${adError.message}")
-                
-                // Réessayer plus tard
-                adView?.postDelayed({
-                    if (!bannerLoaded && NetworkManager.isInternetAvailable(this@GameActivity)) {
-                        loadBannerAd(mainLayout)
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    // Échec du chargement → on la cache
+                    bannerLoaded = false
+                    bannerAdLoading = false
+                    visibility = View.GONE
+                    println("❌ Bannière non disponible: ${adError.message}")
+                    
+                    // Réessayer plus tard (une seule fois, sans recréer la vue)
+                    retryRunnable = Runnable {
+                        if (!bannerLoaded && NetworkManager.isInternetAvailable(this@GameActivity)) {
+                            loadAd()
+                        }
                     }
-                }, 60000)
+                    retryHandler = Handler(Looper.getMainLooper())
+                    retryHandler?.postDelayed(retryRunnable!!, 60000)
+                }
             }
-        }
 
-        // Charger l'annonce
-        val adRequest = AdRequest.Builder().build()
-        adView?.loadAd(adRequest)
+            val adLayoutParams = FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                gravity = android.view.Gravity.BOTTOM
+            }
+            
+            mainLayout.addView(this, adLayoutParams)
+            loadAd()
+        }
+    }
+    
+    private fun loadAd() {
+        if (!bannerAdLoading && NetworkManager.isInternetAvailable(this)) {
+            bannerAdLoading = true
+            val adRequest = AdRequest.Builder().build()
+            adView?.loadAd(adRequest)
+        }
     }
 
     private fun onWatchAdClicked() {
-        // Utilisation de la nouvelle variable
-        if (adLoadingInProgress) return
+        // Éviter les doubles clics
+        if (rewardedAdLoading) {
+            Toast.makeText(this, "⏳ Publicité en cours de chargement...", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         if (!NetworkManager.isInternetAvailable(this)) {
             showNoInternetDialog()
@@ -128,13 +161,16 @@ class GameActivity : AppCompatActivity() {
             return
         }
 
-        // ← Ligne 74 : Modification de adLoadingInProgress
-        adLoadingInProgress = true
+        rewardedAdLoading = true
 
-        AdManager.showRewardedAd(this) {
-            adLoadingInProgress = false
-            Toast.makeText(this@GameActivity, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
-            gameView.revive()
+        AdManager.showRewardedAd(this) { success ->
+            rewardedAdLoading = false
+            if (success) {
+                Toast.makeText(this@GameActivity, "🎮 Bonne chance !", Toast.LENGTH_SHORT).show()
+                gameView.revive()
+            } else {
+                Toast.makeText(this@GameActivity, "❌ Publicité non terminée", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -190,15 +226,24 @@ class GameActivity : AppCompatActivity() {
         super.onResume()
         gameView.resume()
         adView?.resume()
-        adLoadingInProgress = false
+        rewardedAdLoading = false
         
-        if (!bannerLoaded && NetworkManager.isInternetAvailable(this)) {
-            adView?.loadAd(AdRequest.Builder().build())
+        // Ne recharger que si pas déjà chargée ET pas déjà en cours
+        if (!bannerLoaded && !bannerAdLoading && NetworkManager.isInternetAvailable(this)) {
+            loadAd()
         }
     }
 
     override fun onDestroy() {
+        // Nettoyer les handlers
+        retryRunnable?.let { retryHandler?.removeCallbacks(it) }
+        retryHandler = null
+        retryRunnable = null
+        
+        // Détruire la bannière
         adView?.destroy()
+        adView = null
+        
         super.onDestroy()
     }
 }
