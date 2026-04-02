@@ -47,7 +47,7 @@ class GameActivity : AppCompatActivity() {
             }
         )
 
-        // 4. Ajouter le GameView dans le conteneur (FrameLayout avec l'id gameContainer)
+        // 4. Ajouter le GameView dans le conteneur
         val gameContainer = findViewById<FrameLayout>(R.id.gameContainer)
         gameContainer.addView(gameView)
     }
