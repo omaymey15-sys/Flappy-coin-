@@ -51,6 +51,7 @@ dependencies {
     // ✅ AdMob
     implementation "com.google.android.gms:play-services-ads:22.6.0"
 
+    implementation 'com.ironsource.sdk:mediationsdk:7.2.0
     // ✅ Kotlin standard library
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.20"
 }
